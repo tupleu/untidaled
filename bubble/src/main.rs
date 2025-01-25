@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
 
 const WIDTH: f32 = 1920.;
@@ -20,7 +22,7 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(
             FixedUpdate,
-            (apply_gravity, advance_physics, check_for_collisions)
+            (apply_gravity, advance_physics, check_for_collisions, death_respawn,)
                 // `chain`ing systems together runs them in order
                 .chain(),
         )
@@ -51,9 +53,12 @@ struct Collider;
 
 #[derive(Component)]
 struct Player {
-    //coyote_time: Timer,
+    coyote_timer: Timer,
+    spawn_x: f32,
+    spawn_y: f32,
     is_grabbing: bool,
     is_grounded: bool,
+    can_jump: bool,
     h_speed: f32,
     jump_force: f32,
     gravity: f32,
@@ -99,8 +104,12 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         PhysicalTranslation(Vec3::new(0., 50., 2.)),
         PreviousPhysicalTranslation::default(),
         Player {
+            coyote_timer: Timer::new(Duration::from_secs(10), TimerMode::Repeating),
+            spawn_x: 0.,
+            spawn_y: 50.,
             is_grabbing: false,
             is_grounded: false,
+            can_jump: false,
             jump_force: 200., //jump force? peak peak
             h_speed: 200.,
             gravity: 600.,
@@ -127,6 +136,33 @@ fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>
     velocity.y -= player.gravity * time.delta_secs();
 }
 
+fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>,)
+{
+    let (mut phys_translation, player) = player_query.into_inner();
+    
+    if phys_translation.x > WIDTH*2. || phys_translation.x < (WIDTH/2.) * -1. || phys_translation.y < (HEIGHT/2.) * -1. || phys_translation.y > HEIGHT * 2.
+    {
+        phys_translation.x = player.spawn_x;
+        phys_translation.y = player.spawn_y;
+    }
+}
+
+fn coyote_time(
+    _time: Res<Time>,
+    mut player: Player
+)
+{
+    if !player.is_grounded
+    {
+        player.coyote_timer.tick(_time.delta());
+
+        if player.coyote_timer.finished()
+        {
+            player.can_jump = false;
+        }
+    }
+}
+
 fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     player_query: Single<(&mut AccumulatedInput, &mut Velocity, &mut Player)>,
@@ -135,16 +171,13 @@ fn handle_input(
     if keyboard_input.pressed(KeyCode::KeyW) {
         input.y += 1.0;
     }
-    if keyboard_input.pressed(KeyCode::KeyS) {
-        input.y -= 1.0;
-    }
     if keyboard_input.pressed(KeyCode::KeyA) {
         input.x -= 1.0;
     }
     if keyboard_input.pressed(KeyCode::KeyD) {
         input.x += 1.0;
     }
-    if player.is_grounded && keyboard_input.pressed(KeyCode::Space) {
+    if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
         velocity.y = player.jump_force;
         player.is_grounded = false;
     } else {
@@ -240,6 +273,7 @@ fn check_for_collisions(
             {
                 physical_translation.y -= if previous_physical_translation.y > collider_center.y {
                     player.is_grounded = true;
+                    player.can_jump = true;
                     aabb.min.y - collider_aabb.max.y
                 } else {
                     aabb.max.y - collider_aabb.min.y
