@@ -2,7 +2,6 @@ use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::Windo
 
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
-const PLAYER_SPEED: f32 = 500.;
 
 fn main() {
     App::new()
@@ -51,72 +50,133 @@ struct PreviousPhysicalTranslation(Vec3);
 struct Collider;
 
 #[derive(Component)]
-struct Player;
+struct Player {
+    //coyote_time: Timer,
+    is_grabbing: bool,
+    is_grounded: bool,
+    h_speed: f32,
+    jump_force: f32,
+    gravity: f32,
+}
+
+#[derive(Component)]
+struct Bubble;
+
+#[derive(Component)]
+struct Spikes;
+
+#[derive(Component)]
+enum Direction {
+    Left,
+    Right,
+    Up,
+    Down,
+}
+
+#[derive(Component)]
+struct Fan {
+    direction: Direction,
+    strength: f32,
+    distance: f32,
+}
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2d);
 
+    // commands.spawn(
+    //     (
+    //         Fan,
+    //         Transform::from_scale(Vec3::splat(2.)),
+    //     )
+    // );
+
     commands.spawn((
         Name::new("Player"),
         Sprite::from_image(asset_server.load("test.png")),
-        Transform::from_scale(Vec3::splat(2.)),
+        Transform::from_xyz(0., 0., 2.),
         AccumulatedInput::default(),
         Velocity::default(),
-        PhysicalTranslation::default(),
+        PhysicalTranslation(Vec3::new(0., 50., 2.)),
         PreviousPhysicalTranslation::default(),
-        Player,
+        Player {
+            is_grabbing: false,
+            is_grounded: false,
+            jump_force: 200., //jump force? peak peak
+            h_speed: 200.,
+            gravity: 600.,
+        },
         Collider,
     ));
     commands.spawn((
-        Sprite::from_image(asset_server.load("test.png")),
-        Transform::from_scale(Vec3::splat(2.)),
+        Sprite::from_image(asset_server.load("bubble.png")),
+        Transform::from_xyz(0., 0., 2.),
         Collider,
     ));
+    commands.spawn((
+        Sprite::from_image(asset_server.load("bubble.png")),
+        Transform::from_xyz(32., 0., 2.),
+        Collider,
+    ));
+}
+
+fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>) {
+    let (mut velocity, player) = player_query.into_inner();
+    // if player.is_grounded {
+    //     return;
+    // }
+    velocity.y -= player.gravity * time.delta_secs();
 }
 
 fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut AccumulatedInput, &mut Velocity), With<Player>>,
+    player_query: Single<(&mut AccumulatedInput, &mut Velocity, &mut Player)>,
 ) {
-    for (mut input, mut velocity) in query.iter_mut() {
-        if keyboard_input.pressed(KeyCode::KeyW) {
-            input.y += 1.0;
-        }
-        if keyboard_input.pressed(KeyCode::KeyS) {
-            input.y -= 1.0;
-        }
-        if keyboard_input.pressed(KeyCode::KeyA) {
-            input.x -= 1.0;
-        }
-        if keyboard_input.pressed(KeyCode::KeyD) {
-            input.x += 1.0;
-        }
-
-        velocity.0 = input.extend(0.0).normalize_or_zero() * PLAYER_SPEED;
+    let (mut input, mut velocity, mut player) = player_query.into_inner();
+    if keyboard_input.pressed(KeyCode::KeyW) {
+        input.y += 1.0;
     }
+    if keyboard_input.pressed(KeyCode::KeyS) {
+        input.y -= 1.0;
+    }
+    if keyboard_input.pressed(KeyCode::KeyA) {
+        input.x -= 1.0;
+    }
+    if keyboard_input.pressed(KeyCode::KeyD) {
+        input.x += 1.0;
+    }
+    if player.is_grounded && keyboard_input.pressed(KeyCode::Space) {
+        velocity.y = player.jump_force;
+        player.is_grounded = false;
+    } else {
+        input.y = 0.;
+    }
+
+    // velocity.0 += input.extend(0.0).normalize_or_zero() * 5.;
+    // velocity.0 += input.extend(0.);
+    println!("1 {:?} {:?}", player.is_grounded, velocity);
 }
 
 fn advance_physics(
     fixed_time: Res<Time<Fixed>>,
-    mut query: Query<
-        (
-            &mut PhysicalTranslation,
-            &mut PreviousPhysicalTranslation,
-            &mut AccumulatedInput,
-            &Velocity,
-        ),
-        With<Player>,
-    >,
+    mut query: Query<(
+        &mut PhysicalTranslation,
+        &mut PreviousPhysicalTranslation,
+        &mut AccumulatedInput,
+        &Velocity,
+        &Player,
+    )>,
 ) {
     for (
         mut current_physical_translation,
         mut previous_physical_translation,
         mut input,
         velocity,
+        player,
     ) in query.iter_mut()
     {
         previous_physical_translation.0 = current_physical_translation.0;
-        current_physical_translation.0 += velocity.0 * fixed_time.delta_secs();
+        current_physical_translation.0 +=
+            (velocity.0 + input.extend(0.) * player.h_speed) * fixed_time.delta_secs();
 
         // Reset the input accumulator, as we are currently consuming all input that happened since the last fixed timestep.
         input.0 = Vec2::ZERO;
@@ -147,22 +207,27 @@ fn interpolate_rendered_transform(
     }
 }
 
-fn apply_gravity() {}
-
 fn check_for_collisions(
     mut gizmos: Gizmos,
-    player_query: Single<(&mut PhysicalTranslation, &PreviousPhysicalTranslation), With<Player>>,
+    player_query: Single<(
+        &mut Velocity,
+        &mut PhysicalTranslation,
+        &PreviousPhysicalTranslation,
+        &mut Player,
+    )>,
     collider_query: Query<&Transform, (With<Collider>, Without<Player>)>,
 ) {
-    let (mut physical_translation, previous_physical_translation) = player_query.into_inner();
+    let (mut velocity, mut physical_translation, previous_physical_translation, mut player) =
+        player_query.into_inner();
 
     let center = physical_translation.truncate();
-    let aabb = Aabb2d::new(center, Vec2::splat(32.));
+    let aabb = Aabb2d::new(center, Vec2::splat(16.));
     gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
 
+    // player.is_grounded = false;
     for collider in collider_query.iter() {
         let collider_center = collider.translation.truncate();
-        let collider_aabb = Aabb2d::new(collider_center, Vec2::splat(32.));
+        let collider_aabb = Aabb2d::new(collider_center, Vec2::splat(16.));
         gizmos.rect_2d(collider_center, collider_aabb.half_size() * 2., YELLOW);
 
         let x_overlaps = aabb.min.x < collider_aabb.max.x && aabb.max.x > collider_aabb.min.x;
@@ -174,17 +239,21 @@ fn check_for_collisions(
                 > f32::abs(previous_physical_translation.x - collider_center.x)
             {
                 physical_translation.y -= if previous_physical_translation.y > collider_center.y {
+                    player.is_grounded = true;
                     aabb.min.y - collider_aabb.max.y
                 } else {
                     aabb.max.y - collider_aabb.min.y
-                }
+                };
+                velocity.y = 0.;
             } else {
                 physical_translation.x -= if previous_physical_translation.x > collider_center.x {
                     aabb.min.x - collider_aabb.max.x
                 } else {
                     aabb.max.x - collider_aabb.min.x
-                }
+                };
+                velocity.x = 0.;
             }
         }
     }
+    println!("2 {:?} {:?}", player.is_grounded, velocity);
 }
