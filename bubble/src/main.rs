@@ -101,7 +101,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Player {
             is_grabbing: false,
             is_grounded: false,
-            jump_force: 200., //jump force? peak peak
+            jump_force: 210., //jump force? peak peak
             h_speed: 200.,
             gravity: 600.,
         },
@@ -115,6 +115,21 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Sprite::from_image(asset_server.load("bubble.png")),
         Transform::from_xyz(32., 0., 2.),
+        Collider,
+    ));
+    commands.spawn((
+        Sprite::from_image(asset_server.load("bubble.png")),
+        Transform::from_xyz(-32., 0., 2.),
+        Collider,
+    ));
+    commands.spawn((
+        Sprite::from_image(asset_server.load("bubble.png")),
+        Transform::from_xyz(32., 32., 2.),
+        Collider,
+    ));
+    commands.spawn((
+        Sprite::from_image(asset_server.load("bubble.png")),
+        Transform::from_xyz(-32., 32., 2.),
         Collider,
     ));
 }
@@ -153,7 +168,7 @@ fn handle_input(
 
     // velocity.0 += input.extend(0.0).normalize_or_zero() * 5.;
     // velocity.0 += input.extend(0.);
-    println!("1 {:?} {:?}", player.is_grounded, velocity);
+    // println!("1 {:?} {:?}", player.is_grounded, velocity);
 }
 
 fn advance_physics(
@@ -225,35 +240,109 @@ fn check_for_collisions(
     gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
 
     // player.is_grounded = false;
-    for collider in collider_query.iter() {
+    let mut check_once = true;
+    'outer: for collider in collider_query.iter() {
         let collider_center = collider.translation.truncate();
         let collider_aabb = Aabb2d::new(collider_center, Vec2::splat(16.));
-        gizmos.rect_2d(collider_center, collider_aabb.half_size() * 2., YELLOW);
 
         let x_overlaps = aabb.min.x < collider_aabb.max.x && aabb.max.x > collider_aabb.min.x;
         let y_overlaps = aabb.min.y < collider_aabb.max.y && aabb.max.y > collider_aabb.min.y;
+
         // if intersects, move back by larger axis
         if x_overlaps && y_overlaps {
-            // check which axis is larger
+            let displacement;
+            let mut to_ground = false;
+            let aabb2;
+            // check which axis is larger first
             if f32::abs(previous_physical_translation.y - collider_center.y)
                 > f32::abs(previous_physical_translation.x - collider_center.x)
             {
-                physical_translation.y -= if previous_physical_translation.y > collider_center.y {
-                    player.is_grounded = true;
+                displacement = if previous_physical_translation.y > collider_center.y {
+                    // player.is_grounded = true;
+                    to_ground = true;
                     aabb.min.y - collider_aabb.max.y
                 } else {
                     aabb.max.y - collider_aabb.min.y
                 };
+                let center2 = Vec2::new(center.x, center.y - displacement);
+                aabb2 = Aabb2d::new(center2, Vec2::splat(16.));
+
+                // check if displacement collides with other colliders
+                'inner: for collider2 in collider_query.iter() {
+                    if collider == collider2 {
+                        continue 'inner;
+                    }
+                    let collider_center2 = collider2.translation.truncate();
+                    let collider_aabb2 = Aabb2d::new(collider_center2, Vec2::splat(16.));
+                    let x_overlaps2 =
+                        aabb2.min.x < collider_aabb2.max.x && aabb2.max.x > collider_aabb2.min.x;
+                    let y_overlaps2 =
+                        aabb2.min.y < collider_aabb2.max.y && aabb2.max.y > collider_aabb2.min.y;
+                    if x_overlaps2 && y_overlaps2 {
+                        if check_once {
+                            check_once = false;
+                            continue 'outer;
+                        }
+                        let displacement2 = if previous_physical_translation.x > collider_center2.x
+                        {
+                            aabb2.min.x - collider_aabb2.max.x
+                        } else {
+                            aabb2.max.x - collider_aabb2.min.x
+                        };
+                        physical_translation.x -= displacement2;
+                        velocity.x = 0.;
+                        break;
+                    }
+                }
+                player.is_grounded = to_ground;
                 velocity.y = 0.;
+                physical_translation.y -= displacement;
             } else {
-                physical_translation.x -= if previous_physical_translation.x > collider_center.x {
+                displacement = if previous_physical_translation.x > collider_center.x {
                     aabb.min.x - collider_aabb.max.x
                 } else {
                     aabb.max.x - collider_aabb.min.x
                 };
+                let center2 = Vec2::new(center.x - displacement, center.y);
+                aabb2 = Aabb2d::new(center2, Vec2::splat(16.));
+
+                // check if displacement collides with other colliders
+                'inner: for collider2 in collider_query.iter() {
+                    if collider == collider2 {
+                        continue 'inner;
+                    }
+                    let collider_center2 = collider2.translation.truncate();
+                    let collider_aabb2 = Aabb2d::new(collider_center2, Vec2::splat(16.));
+                    let x_overlaps2 =
+                        aabb2.min.x < collider_aabb2.max.x && aabb2.max.x > collider_aabb2.min.x;
+                    let y_overlaps2 =
+                        aabb2.min.y < collider_aabb2.max.y && aabb2.max.y > collider_aabb2.min.y;
+                    if x_overlaps2 && y_overlaps2 {
+                        if check_once {
+                            check_once = false;
+                            continue 'outer;
+                        }
+                        let displacement2 = if previous_physical_translation.y > collider_center2.y
+                        {
+                            // player.is_grounded = true;
+                            to_ground = true;
+                            aabb2.min.y - collider_aabb2.max.y
+                        } else {
+                            aabb2.max.y - collider_aabb2.min.y
+                        };
+                        physical_translation.y -= displacement2;
+                        player.is_grounded = to_ground;
+                        velocity.y = 0.;
+                        break;
+                        // continue 'outer;
+                    }
+                }
                 velocity.x = 0.;
+                physical_translation.x -= displacement;
             }
+            gizmos.rect_2d(collider_center, collider_aabb.half_size() * 2., YELLOW);
+            break;
         }
     }
-    println!("2 {:?} {:?}", player.is_grounded, velocity);
+    // println!("2 {:?} {:?}", player.is_grounded, velocity);
 }
