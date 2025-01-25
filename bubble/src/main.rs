@@ -86,6 +86,21 @@ struct Fan
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2d);
 
+    commands.spawn(
+        (
+            Bubble,
+            Sprite::from_image(asset_server.load("bubble.png")),
+            Transform::from_scale(Vec3::splat(2.)),
+        )
+    );
+
+    // commands.spawn(
+    //     (
+    //         Fan,
+    //         Transform::from_scale(Vec3::splat(2.)),
+    //     )
+    // );
+
     commands.spawn((
         Name::new("Player"),
         Sprite::from_image(asset_server.load("test.png")),
@@ -101,8 +116,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn apply_gravity(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_transform: Single<&mut Transform, With<Player>>,
-    mut player_obj: Single<&mut Player>,
+    player_obj: Single<&mut Player>,
     mut velocity: Single<&mut Velocity, With<Player>>,
     time: Res<Time>,
 ) {
