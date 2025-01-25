@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{io::empty, ptr::null, time::Duration};
 
 use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
 
@@ -68,6 +68,14 @@ struct Player {
 struct Bubble;
 
 #[derive(Component)]
+struct BubbleSpawner
+{
+    current_bubble: Bubble,
+    spawn_height: f32,
+    spawn_time: Timer
+}
+
+#[derive(Component)]
 struct Spikes;
 
 #[derive(Component)]
@@ -116,6 +124,20 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         Collider,
     ));
+
+
+    commands.spawn((
+        Name::new("BubbleSpawner"),
+        Sprite::from_image(asset_server.load("spawner.png")),
+        Transform::from_xyz(-32., 0., 2.),
+        BubbleSpawner{
+            current_bubble: (),
+            spawn_height: 10.,
+            spawn_time: Timer::new(Duration::from_secs_f32(2.), TimerMode::Repeating),
+        },
+        Collider,
+    ));
+
     commands.spawn((
         Sprite::from_image(asset_server.load("bubble.png")),
         Transform::from_xyz(0., 0., 2.),
@@ -134,6 +156,17 @@ fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>
     //     return;
     // }
     velocity.y -= player.gravity * time.delta_secs();
+}
+
+fn spawn_bubbles(spawner_query: Single<(&mut BubbleSpawner)>, time: Res<Time>)
+{
+    let mut _spawner = spawner_query.into_inner();
+
+    if _spawner.current_bubble == ()
+    {
+        
+    }
+
 }
 
 fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>,)
