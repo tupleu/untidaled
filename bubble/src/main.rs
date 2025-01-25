@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::WindowResolution};
+use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
 
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
@@ -21,11 +21,10 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(
             FixedUpdate,
-            (apply_gravity, check_for_collisions)
+            (apply_gravity, advance_physics, check_for_collisions)
                 // `chain`ing systems together runs them in order
                 .chain(),
         )
-        .add_systems(FixedUpdate, advance_physics)
         .add_systems(
             RunFixedMainLoop,
             (
@@ -68,11 +67,16 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Player,
         Collider,
     ));
+    commands.spawn((
+        Sprite::from_image(asset_server.load("test.png")),
+        Transform::from_scale(Vec3::splat(2.)),
+        Collider,
+    ));
 }
 
 fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut AccumulatedInput, &mut Velocity)>,
+    mut query: Query<(&mut AccumulatedInput, &mut Velocity), With<Player>>,
 ) {
     for (mut input, mut velocity) in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::KeyW) {
@@ -94,12 +98,15 @@ fn handle_input(
 
 fn advance_physics(
     fixed_time: Res<Time<Fixed>>,
-    mut query: Query<(
-        &mut PhysicalTranslation,
-        &mut PreviousPhysicalTranslation,
-        &mut AccumulatedInput,
-        &Velocity,
-    )>,
+    mut query: Query<
+        (
+            &mut PhysicalTranslation,
+            &mut PreviousPhysicalTranslation,
+            &mut AccumulatedInput,
+            &Velocity,
+        ),
+        With<Player>,
+    >,
 ) {
     for (
         mut current_physical_translation,
@@ -142,4 +149,42 @@ fn interpolate_rendered_transform(
 
 fn apply_gravity() {}
 
-fn check_for_collisions() {}
+fn check_for_collisions(
+    mut gizmos: Gizmos,
+    player_query: Single<(&mut PhysicalTranslation, &PreviousPhysicalTranslation), With<Player>>,
+    collider_query: Query<&Transform, (With<Collider>, Without<Player>)>,
+) {
+    let (mut physical_translation, previous_physical_translation) = player_query.into_inner();
+
+    let center = physical_translation.truncate();
+    let aabb = Aabb2d::new(center, Vec2::splat(32.));
+    gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
+
+    for collider in collider_query.iter() {
+        let collider_center = collider.translation.truncate();
+        let collider_aabb = Aabb2d::new(collider_center, Vec2::splat(32.));
+        gizmos.rect_2d(collider_center, collider_aabb.half_size() * 2., YELLOW);
+
+        let x_overlaps = aabb.min.x < collider_aabb.max.x && aabb.max.x > collider_aabb.min.x;
+        let y_overlaps = aabb.min.y < collider_aabb.max.y && aabb.max.y > collider_aabb.min.y;
+        // if intersects, move back by larger axis
+        if x_overlaps && y_overlaps {
+            // check which axis is larger
+            if f32::abs(previous_physical_translation.y - collider_center.y)
+                > f32::abs(previous_physical_translation.x - collider_center.x)
+            {
+                physical_translation.y -= if previous_physical_translation.y > collider_center.y {
+                    aabb.min.y - collider_aabb.max.y
+                } else {
+                    aabb.max.y - collider_aabb.min.y
+                }
+            } else {
+                physical_translation.x -= if previous_physical_translation.x > collider_center.x {
+                    aabb.min.x - collider_aabb.max.x
+                } else {
+                    aabb.max.x - collider_aabb.min.x
+                }
+            }
+        }
+    }
+}
