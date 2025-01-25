@@ -21,12 +21,32 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(
             FixedUpdate,
-            (apply_gravity, move_player, check_for_collisions)
+            (apply_gravity, check_for_collisions)
                 // `chain`ing systems together runs them in order
                 .chain(),
         )
+        .add_systems(FixedUpdate, advance_physics)
+        .add_systems(
+            RunFixedMainLoop,
+            (
+                handle_input.in_set(RunFixedMainLoopSystem::BeforeFixedMainLoop),
+                interpolate_rendered_transform.in_set(RunFixedMainLoopSystem::AfterFixedMainLoop),
+            ),
+        )
         .run();
 }
+
+#[derive(Debug, Component, Clone, Copy, PartialEq, Default, Deref, DerefMut)]
+struct AccumulatedInput(Vec2);
+
+#[derive(Debug, Component, Clone, Copy, PartialEq, Default, Deref, DerefMut)]
+struct Velocity(Vec3);
+
+#[derive(Debug, Component, Clone, Copy, PartialEq, Default, Deref, DerefMut)]
+struct PhysicalTranslation(Vec3);
+
+#[derive(Debug, Component, Clone, Copy, PartialEq, Default, Deref, DerefMut)]
+struct PreviousPhysicalTranslation(Vec3);
 
 #[derive(Component, Default)]
 struct Collider;
@@ -38,41 +58,88 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2d);
 
     commands.spawn((
+        Name::new("Player"),
         Sprite::from_image(asset_server.load("test.png")),
-        Transform::from_xyz(8., 8., 2.),
+        Transform::from_scale(Vec3::splat(2.)),
+        AccumulatedInput::default(),
+        Velocity::default(),
+        PhysicalTranslation::default(),
+        PreviousPhysicalTranslation::default(),
         Player,
         Collider,
     ));
 }
 
-fn apply_gravity() {}
-
-fn move_player(
+fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_transform: Single<&mut Transform, With<Player>>,
-    time: Res<Time>,
+    mut query: Query<(&mut AccumulatedInput, &mut Velocity)>,
 ) {
-    let mut direction = 0.0;
+    for (mut input, mut velocity) in query.iter_mut() {
+        if keyboard_input.pressed(KeyCode::KeyW) {
+            input.y += 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::KeyS) {
+            input.y -= 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::KeyA) {
+            input.x -= 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::KeyD) {
+            input.x += 1.0;
+        }
 
-    if keyboard_input.pressed(KeyCode::KeyA) {
-        direction -= 1.0;
+        velocity.0 = input.extend(0.0).normalize_or_zero() * PLAYER_SPEED;
     }
-
-    if keyboard_input.pressed(KeyCode::KeyD) {
-        direction += 1.0;
-    }
-
-    // Calculate the new horizontal paddle position based on player input
-    let new_player_position =
-        player_transform.translation.x + direction * PLAYER_SPEED * time.delta_secs();
-
-    // Update the paddle position,
-    // making sure it doesn't cause the paddle to leave the arena
-    let left_bound = -WIDTH / 2. + 200.;
-    let right_bound = WIDTH / 2. - 200.;
-
-    player_transform.translation.x = new_player_position.clamp(left_bound, right_bound);
-    // println!("{:?}", player_transform.translation.x);
 }
+
+fn advance_physics(
+    fixed_time: Res<Time<Fixed>>,
+    mut query: Query<(
+        &mut PhysicalTranslation,
+        &mut PreviousPhysicalTranslation,
+        &mut AccumulatedInput,
+        &Velocity,
+    )>,
+) {
+    for (
+        mut current_physical_translation,
+        mut previous_physical_translation,
+        mut input,
+        velocity,
+    ) in query.iter_mut()
+    {
+        previous_physical_translation.0 = current_physical_translation.0;
+        current_physical_translation.0 += velocity.0 * fixed_time.delta_secs();
+
+        // Reset the input accumulator, as we are currently consuming all input that happened since the last fixed timestep.
+        input.0 = Vec2::ZERO;
+    }
+}
+
+fn interpolate_rendered_transform(
+    fixed_time: Res<Time<Fixed>>,
+    mut query: Query<
+        (
+            &mut Transform,
+            &PhysicalTranslation,
+            &PreviousPhysicalTranslation,
+        ),
+        With<Player>,
+    >,
+) {
+    for (mut transform, current_physical_translation, previous_physical_translation) in
+        query.iter_mut()
+    {
+        let previous = previous_physical_translation.0;
+        let current = current_physical_translation.0;
+        // The overstep fraction is a value between 0 and 1 that tells us how far we are between two fixed timesteps.
+        let alpha = fixed_time.overstep_fraction();
+
+        let rendered_translation = previous.lerp(current, alpha);
+        transform.translation = rendered_translation;
+    }
+}
+
+fn apply_gravity() {}
 
 fn check_for_collisions() {}
