@@ -102,8 +102,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             is_grabbing: false,
             is_grounded: false,
             jump_force: 200., //jump force? peak peak
-            h_speed: 800.,
-            gravity: 400.,
+            h_speed: 200.,
+            gravity: 600.,
         },
         Collider,
     ));
@@ -112,13 +112,18 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Transform::from_xyz(0., 0., 2.),
         Collider,
     ));
+    commands.spawn((
+        Sprite::from_image(asset_server.load("bubble.png")),
+        Transform::from_xyz(32., 0., 2.),
+        Collider,
+    ));
 }
 
 fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>) {
     let (mut velocity, player) = player_query.into_inner();
-    if player.is_grounded {
-        return;
-    }
+    // if player.is_grounded {
+    //     return;
+    // }
     velocity.y -= player.gravity * time.delta_secs();
 }
 
@@ -140,42 +145,38 @@ fn handle_input(
         input.x += 1.0;
     }
     if player.is_grounded && keyboard_input.pressed(KeyCode::Space) {
-        input.y = player.jump_force;
+        velocity.y = player.jump_force;
         player.is_grounded = false;
     } else {
         input.y = 0.;
     }
 
     // velocity.0 += input.extend(0.0).normalize_or_zero() * 5.;
-    velocity.0 += input.extend(0.);
+    // velocity.0 += input.extend(0.);
     println!("1 {:?} {:?}", player.is_grounded, velocity);
-    // infinite friction if no horizontal direction is held
-    if input.x == 0. {
-        velocity.x = 0.;
-    }
 }
 
 fn advance_physics(
     fixed_time: Res<Time<Fixed>>,
-    mut query: Query<
-        (
-            &mut PhysicalTranslation,
-            &mut PreviousPhysicalTranslation,
-            &mut AccumulatedInput,
-            &Velocity,
-        ),
-        With<Player>,
-    >,
+    mut query: Query<(
+        &mut PhysicalTranslation,
+        &mut PreviousPhysicalTranslation,
+        &mut AccumulatedInput,
+        &Velocity,
+        &Player,
+    )>,
 ) {
     for (
         mut current_physical_translation,
         mut previous_physical_translation,
         mut input,
         velocity,
+        player,
     ) in query.iter_mut()
     {
         previous_physical_translation.0 = current_physical_translation.0;
-        current_physical_translation.0 += velocity.0 * fixed_time.delta_secs();
+        current_physical_translation.0 +=
+            (velocity.0 + input.extend(0.) * player.h_speed) * fixed_time.delta_secs();
 
         // Reset the input accumulator, as we are currently consuming all input that happened since the last fixed timestep.
         input.0 = Vec2::ZERO;
