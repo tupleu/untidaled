@@ -1,8 +1,7 @@
-use bevy::{prelude::*, window::WindowResolution};
+use bevy::{prelude::*, window::{WindowMode, WindowResolution}};
 
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
-const PLAYER_SPEED: f32 = 500.;
 
 fn main() {
     App::new()
@@ -13,6 +12,7 @@ fn main() {
                     primary_window: Some(Window {
                         title: "bubble".to_string(),
                         resolution: WindowResolution::new(WIDTH, HEIGHT),
+                        mode: WindowMode ::Fullscreen(MonitorSelection::Primary),
                         ..default()
                     }),
                     ..default()
@@ -52,7 +52,15 @@ struct PreviousPhysicalTranslation(Vec3);
 struct Collider;
 
 #[derive(Component)]
-struct Player;
+struct Player {
+    //coyote_time: Timer,
+    is_grabbing: bool,
+    is_grounded: bool,
+    h_speed: f32,
+    jump_force: f32,
+    gravity: f32,
+
+}
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2d);
@@ -65,22 +73,43 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Velocity::default(),
         PhysicalTranslation::default(),
         PreviousPhysicalTranslation::default(),
-        Player,
+        Player{is_grabbing:false, is_grounded:false, jump_force:1., h_speed:500., gravity:20.,},
         Collider,
     ));
 }
 
+fn apply_gravity(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut player_transform: Single<&mut Transform, With<Player>>,
+    mut player_obj: Single<&mut Player>,
+    mut velocity: Single<&mut Velocity, With<Player>>,
+    time: Res<Time>,
+) {
+
+    if player_obj.is_grounded && velocity.y < 0.
+    {
+        velocity.y = 0.;
+    }
+
+    velocity.y -= player_obj.gravity * time.delta_secs();
+
+    if player_obj.is_grounded && keyboard_input.pressed(KeyCode::Space)
+    {
+        velocity.y = player_obj.jump_force;
+    }
+}
+
 fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut AccumulatedInput, &mut Velocity)>,
+    mut query: Query<(&mut AccumulatedInput, &mut Velocity), With<Player>>,
 ) {
     for (mut input, mut velocity) in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::KeyW) {
             input.y += 1.0;
         }
-        if keyboard_input.pressed(KeyCode::KeyS) {
-            input.y -= 1.0;
-        }
+        // if keyboard_input.pressed(KeyCode::KeyS) {
+        //     input.y -= 1.0;
+        // }
         if keyboard_input.pressed(KeyCode::KeyA) {
             input.x -= 1.0;
         }
@@ -88,7 +117,7 @@ fn handle_input(
             input.x += 1.0;
         }
 
-        velocity.0 = input.extend(0.0).normalize_or_zero() * PLAYER_SPEED;
+        velocity.0 += input.extend(0.0).normalize_or_zero() * 5.;
     }
 }
 
@@ -139,7 +168,5 @@ fn interpolate_rendered_transform(
         transform.translation = rendered_translation;
     }
 }
-
-fn apply_gravity() {}
 
 fn check_for_collisions() {}
