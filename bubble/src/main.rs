@@ -22,7 +22,7 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(
             FixedUpdate,
-            (apply_gravity, advance_physics, check_for_collisions, death_respawn,)
+            (apply_gravity, advance_physics, check_for_collisions, death_respawn, coyote_time,)
                 // `chain`ing systems together runs them in order
                 .chain(),
         )
@@ -104,7 +104,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         PhysicalTranslation(Vec3::new(0., 50., 2.)),
         PreviousPhysicalTranslation::default(),
         Player {
-            coyote_timer: Timer::new(Duration::from_secs(10), TimerMode::Repeating),
+            coyote_timer: Timer::new(Duration::from_secs_f32(2.), TimerMode::Repeating),
             spawn_x: 0.,
             spawn_y: 50.,
             is_grabbing: false,
@@ -149,9 +149,11 @@ fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>,)
 
 fn coyote_time(
     _time: Res<Time>,
-    mut player: Player
+    player_query: Single<&mut Player>,
 )
 {
+    let mut player = player_query.into_inner();
+
     if !player.is_grounded
     {
         player.coyote_timer.tick(_time.delta());
@@ -180,6 +182,7 @@ fn handle_input(
     if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
         velocity.y = player.jump_force;
         player.is_grounded = false;
+        player.can_jump = false;
     } else {
         input.y = 0.;
     }
@@ -279,6 +282,7 @@ fn check_for_collisions(
                     aabb.max.y - collider_aabb.min.y
                 };
                 velocity.y = 0.;
+                player.is_grounded = false;
             } else {
                 physical_translation.x -= if previous_physical_translation.x > collider_center.x {
                     aabb.min.x - collider_aabb.max.x
