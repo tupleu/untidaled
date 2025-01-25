@@ -59,7 +59,28 @@ struct Player {
     h_speed: f32,
     jump_force: f32,
     gravity: f32,
+}
 
+#[derive(Component)]
+struct Bubble;
+
+#[derive(Component)]
+struct Spikes;
+
+#[derive(Component)]
+enum Direction {
+    Left,
+    Right,
+    Up,
+    Down,
+}
+
+#[derive(Component)]
+struct Fan
+{
+    direction: Direction,
+    strength: f32,
+    distance: f32,
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
