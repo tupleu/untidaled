@@ -2,6 +2,19 @@ use std::time::Duration;
 
 use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
 
+const TEST_LEVEL: [[i32; 10]; 10] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 2, 0, 0],
+    [1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1, 1, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
+
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
 
@@ -107,12 +120,12 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Transform::from_xyz(0., 0., 2.),
         AccumulatedInput::default(),
         Velocity::default(),
-        PhysicalTranslation(Vec3::new(0., 50., 2.)),
+        PhysicalTranslation(Vec3::new(0., 64., 2.)),
         PreviousPhysicalTranslation::default(),
         Player {
             coyote_timer: Timer::new(Duration::from_secs_f32(2.), TimerMode::Repeating),
             spawn_x: 0.,
-            spawn_y: 50.,
+            spawn_y: 64.,
             is_grabbing: false,
             is_grounded: false,
             can_jump: false,
@@ -122,31 +135,32 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         Collider,
     ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(0., 0., 2.),
-        Collider,
-    ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(32., 0., 2.),
-        Collider,
-    ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(-32., 0., 2.),
-        Collider,
-    ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(32., 32., 2.),
-        Collider,
-    ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(-32., 32., 2.),
-        Collider,
-    ));
+
+    spawn_level(commands, asset_server, TEST_LEVEL);
+}
+
+fn spawn_level(mut commands: Commands, asset_server: Res<AssetServer>, level: [[i32; 10]; 10]) {
+    for (i, row) in level.iter().enumerate() {
+        for (j, elem) in row.iter().enumerate() {
+            match elem {
+                1 => {
+                    commands.spawn((
+                        Sprite::from_image(asset_server.load("bubble.png")),
+                        Transform::from_xyz(32. * j as f32 - 160., -32. * i as f32 + 160., 2.),
+                        Collider,
+                    ));
+                }
+                2 => {
+                    commands.spawn((
+                        Sprite::from_image(asset_server.load("bubble.png")),
+                        Transform::from_xyz(32. * j as f32 - 160., -32. * i as f32 + 160., 2.),
+                        Collider,
+                    ));
+                }
+                _ => (),
+            }
+        }
+    }
 }
 
 fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>) {
@@ -187,9 +201,9 @@ fn handle_input(
     player_query: Single<(&mut AccumulatedInput, &mut Velocity, &mut Player)>,
 ) {
     let (mut input, mut velocity, mut player) = player_query.into_inner();
-    if keyboard_input.pressed(KeyCode::KeyW) {
-        input.y += 1.0;
-    }
+    // if keyboard_input.pressed(KeyCode::KeyW) {
+    //     input.y += 1.0;
+    // }
     if keyboard_input.pressed(KeyCode::KeyA) {
         input.x -= 1.0;
     }
@@ -381,7 +395,11 @@ fn check_for_collisions(
                 velocity.x = 0.;
                 physical_translation.x -= displacement;
             }
-            gizmos.rect_2d(collider_center, collider_aabb.half_size() * 2., YELLOW);
+            gizmos.rect_2d(
+                collider_center,
+                collider_aabb.half_size() * 2.,
+                SPRING_GREEN,
+            );
             break;
         }
     }
