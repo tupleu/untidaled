@@ -2,6 +2,13 @@ use std::time::Duration;
 
 use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
 
+const WIDTH: f32 = 1920.;
+const HEIGHT: f32 = 1080.;
+const BSIZE: u32 = 32;
+
+const LEVEL_WIDTH: usize = 20;
+const LEVEL_HEIGHT: usize = 10;
+
 const TEST_LEVEL: [[i32; 10]; 10] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
@@ -15,9 +22,38 @@ const TEST_LEVEL: [[i32; 10]; 10] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
-const WIDTH: f32 = 1920.;
-const HEIGHT: f32 = 1080.;
-const BSIZE: u32 = 32;
+const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 9, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+];
+
+const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
+enum GameState {
+    #[default]
+    Playing,
+    GameOver,
+}
 
 fn main() {
     App::new()
@@ -33,19 +69,23 @@ fn main() {
                     ..default()
                 }),
         )
-        .add_systems(Startup, (setup, spawn_level))
+        .init_state::<GameState>()
+        .enable_state_scoped_entities::<GameState>()
+        .add_systems(Startup, setup)
+        .add_systems(OnEnter(GameState::Playing), spawn_level)
         .add_systems(
             FixedUpdate,
             (
                 apply_gravity,
                 advance_physics,
                 check_for_collisions,
-                death_respawn,
+                oob_check,
                 coyote_time,
                 scale_screen,
             )
                 // `chain`ing systems together runs them in order
-                .chain(),
+                .chain()
+                .run_if(in_state(GameState::Playing)),
         )
         .add_systems(
             RunFixedMainLoop,
@@ -53,8 +93,10 @@ fn main() {
                 handle_input.in_set(RunFixedMainLoopSystem::BeforeFixedMainLoop),
                 flip_sprite.in_set(RunFixedMainLoopSystem::AfterFixedMainLoop),
                 interpolate_rendered_transform.in_set(RunFixedMainLoopSystem::AfterFixedMainLoop),
-            ),
+            )
+                .run_if(in_state(GameState::Playing)),
         )
+        .add_systems(OnEnter(GameState::GameOver), reset)
         .add_systems(Update, animate_sprite)
         .run();
 }
@@ -125,56 +167,8 @@ fn scale_screen(mut query: Single<&mut OrthographicProjection, With<Camera>>) {
     ortho.scale = 0.5;
 }
 
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-) {
+fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
-
-    // commands.spawn(
-    //     (
-    //         Fan,
-    //         Transform::from_scale(Vec3::splat(2.)),
-    //     )
-    // );
-
-    let texture = asset_server.load("playerRemake-Sheet.png");
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 4, None, None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let animation_indices: AnimationIndices = AnimationIndices { first: 9, last: 11 };
-    commands.spawn((
-        Sprite::from_atlas_image(
-            texture,
-            TextureAtlas {
-                layout: texture_atlas_layout,
-                index: animation_indices.first,
-            },
-        ),
-        animation_indices,
-        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
-        Transform::from_xyz(0., 64., 2.),
-        Name::new("Player"),
-        AccumulatedInput::default(),
-        Velocity::default(),
-        PhysicalTranslation(Vec3::new(0., 64., 2.)),
-        PreviousPhysicalTranslation::default(),
-        Player {
-            coyote_timer: Timer::new(Duration::from_secs_f32(2.), TimerMode::Repeating),
-            spawn_x: 0.,
-            spawn_y: 64.,
-            is_grounded: false,
-            is_left: true,
-            is_moving: false,
-            is_bubbling: false,
-            bubbled: false,
-            can_jump: false,
-            jump_force: 210., //jump force? peak peak
-            h_speed: 100.,
-            gravity: 600.,
-        },
-        Collider,
-    ));
 }
 
 fn spawn_level(
@@ -182,17 +176,19 @@ fn spawn_level(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let level = TEST_LEVEL;
+    let level = LEVEL_1;
     for (i, row) in level.iter().enumerate() {
         for (j, elem) in row.iter().enumerate() {
             match elem {
                 1 => {
+                    // bubble
                     let texture = asset_server.load("bubble-idle-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
+                        StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -201,8 +197,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                             2.,
                         ),
                         Collider,
@@ -218,6 +214,7 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
+                        StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -234,9 +231,81 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
+                9 => {
+                    //Player
+                    let texture = asset_server.load("playerRemake-Sheet.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 4, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices: AnimationIndices =
+                        AnimationIndices { first: 9, last: 11 };
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Name::new("Player"),
+                        AccumulatedInput::default(),
+                        Velocity::default(),
+                        PhysicalTranslation(Vec3::new(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        )),
+                        PreviousPhysicalTranslation::default(),
+                        Player {
+                            coyote_timer: Timer::new(
+                                Duration::from_secs_f32(2.),
+                                TimerMode::Repeating,
+                            ),
+                            spawn_x: 0.,
+                            spawn_y: 64.,
+                            is_grounded: false,
+                            is_left: false,
+                            is_moving: false,
+                            is_bubbling: false,
+                            bubbled: false,
+                            can_jump: false,
+                            jump_force: 210., //jump force? peak peak
+                            h_speed: 100.,
+                            gravity: 600.,
+                        },
+                        Collider,
+                    ));
+                }
                 _ => (),
             }
         }
+    }
+}
+
+fn reset(mut next_state: ResMut<NextState<GameState>>) {
+    next_state.set(GameState::Playing);
+}
+
+fn oob_check(
+    player_query: Single<&PhysicalTranslation, With<Player>>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    let phys_translation = player_query.into_inner();
+
+    if phys_translation.x > WIDTH * 2.
+        || phys_translation.x < (WIDTH / 2.) * -1.
+        || phys_translation.y < (HEIGHT / 2.) * -1.
+        || phys_translation.y > HEIGHT * 2.
+    {
+        next_state.set(GameState::GameOver);
     }
 }
 
@@ -246,19 +315,6 @@ fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>
     //     return;
     // }
     velocity.y -= player.gravity * time.delta_secs();
-}
-
-fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>) {
-    let (mut phys_translation, player) = player_query.into_inner();
-
-    if phys_translation.x > WIDTH * 2.
-        || phys_translation.x < (WIDTH / 2.) * -1.
-        || phys_translation.y < (HEIGHT / 2.) * -1.
-        || phys_translation.y > HEIGHT * 2.
-    {
-        phys_translation.x = player.spawn_x;
-        phys_translation.y = player.spawn_y;
-    }
 }
 
 fn coyote_time(_time: Res<Time>, player_query: Single<&mut Player>) {
@@ -279,6 +335,7 @@ fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut next_state: ResMut<NextState<GameState>>,
     player_query: Single<(
         &mut AccumulatedInput,
         &PhysicalTranslation,
@@ -287,6 +344,10 @@ fn handle_input(
     )>,
     bubble_query: Query<(&Transform, Entity), With<Bubble>>,
 ) {
+    if keyboard_input.pressed(KeyCode::Escape) {
+        next_state.set(GameState::GameOver);
+        return;
+    }
     let (mut input, position, mut velocity, mut player) = player_query.into_inner();
     if keyboard_input.pressed(KeyCode::KeyA) {
         player.is_left = true;
