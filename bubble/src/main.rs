@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
+use bevy::{asset::io::memory::Dir, color::palettes::css::*, math::bounding::*, prelude::*, window::{WindowFocused, WindowResolution}};
 
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
@@ -9,37 +9,41 @@ const BSIZE: u32 = 32;
 const LEVEL_WIDTH: usize = 20;
 const LEVEL_HEIGHT: usize = 10;
 
+const LOW_WIND: f32 = 1.;
+const MID_WIND: f32 = 2.;
+const HI_WIND: f32 = 3.;
+
 const TEST_LEVEL: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 9, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 3, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 0, 9, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+    [2, 0, 2, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+    [0, 2, 2, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0],
 ];
 
 const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 9, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 9, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
 ];
 
 const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -87,6 +91,8 @@ fn main() {
                 oob_check,
                 coyote_time,
                 scale_screen,
+                wind_collision,
+                death_respawn,
             )
                 // `chain`ing systems together runs them in order
                 .chain()
@@ -145,7 +151,7 @@ struct Player {
 struct Bubble;
 
 #[derive(Component)]
-struct Spikes;
+struct Spike;
 
 #[derive(Component)]
 enum Direction {
@@ -155,11 +161,15 @@ enum Direction {
     Down,
 }
 
+// #[derive(Component)]
+// struct Fan {
+//     direction: Direction
+// }
+
 #[derive(Component)]
-struct Fan {
+struct Wind {
     direction: Direction,
-    strength: f32,
-    distance: f32,
+    force: f32,
 }
 
 #[derive(Component)]
@@ -180,6 +190,55 @@ fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
 }
 
+fn wind_collision(
+    mut bubble_query: Query<&mut Transform, With<Bubble>>, mut wind_query: Query<(&mut Transform, &Wind), (With<Wind>, Without<Bubble>)>
+)
+{
+    for mut bubble in bubble_query.iter_mut()
+    {
+        let bubble_center = bubble.translation.truncate();
+        let bubble_aabb = Aabb2d::new(bubble_center, Vec2::splat(16.));
+
+        for (wind, windprops) in wind_query.iter_mut()
+        {
+            let wind_center = wind.translation.truncate();
+            let wind_aabb = Aabb2d::new(wind_center, Vec2::splat(16.));
+
+            let x_overlaps = bubble_aabb.min.x < wind_aabb.max.x && bubble_aabb.max.x > wind_aabb.min.x;
+            let y_overlaps = bubble_aabb.min.y < wind_aabb.max.y && bubble_aabb.max.y > wind_aabb.min.y;
+
+            if x_overlaps && y_overlaps 
+            {
+                match windprops.direction
+                {
+                    Direction::Down =>
+                    {
+                        bubble.translation.y -= windprops.force
+                    }
+
+                    Direction::Up =>
+                    {
+                        bubble.translation.y += windprops.force
+                    }
+
+                    Direction::Right =>
+                    {
+                        bubble.translation.x += windprops.force
+                    }
+
+                    Direction::Left =>
+                    {
+                        bubble.translation.x -= windprops.force
+                    }
+                }
+            }
+        }
+
+    }
+
+    //if colliding with wind
+}
+
 fn spawn_level(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -190,58 +249,9 @@ fn spawn_level(
     for (i, row) in level.iter().enumerate() {
         for (j, elem) in row.iter().enumerate() {
             match elem {
+                //0 is empty
+                //Player
                 1 => {
-                    // bubble
-                    let texture = asset_server.load("bubble-idle-32x32.png");
-                    let layout =
-                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
-                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-                    let animation_indices = AnimationIndices { first: 0, last: 2 };
-                    commands.spawn((
-                        StateScoped(GameState::Playing),
-                        Sprite::from_atlas_image(
-                            texture,
-                            TextureAtlas {
-                                layout: texture_atlas_layout,
-                                index: animation_indices.first,
-                            },
-                        ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
-                            2.,
-                        ),
-                        Collider,
-                        Bubble,
-                        animation_indices,
-                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
-                    ));
-                }
-                2 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
-                    let layout =
-                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
-                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-                    let animation_indices = AnimationIndices { first: 0, last: 2 };
-                    commands.spawn((
-                        StateScoped(GameState::Playing),
-                        Sprite::from_atlas_image(
-                            texture,
-                            TextureAtlas {
-                                layout: texture_atlas_layout,
-                                index: animation_indices.first,
-                            },
-                        ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
-                        animation_indices,
-                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
-                    ));
-                }
-                9 => {
                     //Player
                     let texture = asset_server.load("playerRemake-Sheet.png");
                     let layout =
@@ -294,6 +304,446 @@ fn spawn_level(
                         Collider,
                     ));
                 }
+                //Bubble Objects
+                2 => {
+                    // bubble
+                    let texture = asset_server.load("bubble-idle-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                        Bubble,
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //3 Platform Here
+                //Spike Objects
+                4 =>{
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Spike,
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        Collider,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Low-Up-Wind
+                5 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Wind{
+                            direction: Direction::Up,
+                            force: LOW_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Mid-Up-Wind
+                6 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Up,
+                            force: MID_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Hi-Up-Wind
+                7 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Up,
+                            force: HI_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Low-Down-Wind
+                8 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Down,
+                            force: LOW_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(180f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Mid-Down-Wind
+                9 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Down,
+                            force: MID_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(180f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Hi-Down-Wind
+                10 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Down,
+                            force: HI_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(180f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Low-Right-Wind
+                11 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Right,
+                            force: LOW_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Mid-Right-Wind
+                12 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Right,
+                            force: MID_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Hi-Right-Wind
+                13 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Right,
+                            force: HI_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Low-Left-Wind
+                14 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Left,
+                            force: LOW_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(-90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Mid-Left-Wind
+                15 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Left,
+                            force: MID_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(-90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Hi-Left-Wind
+                16 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Left,
+                            force: HI_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(-90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
                 _ => (),
             }
         }
@@ -325,6 +775,39 @@ fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>
     //     return;
     // }
     velocity.y -= player.gravity * time.delta_secs();
+}
+
+fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>, mut spikes_query: Query<&mut Transform, With<Spike>>) {
+    let (mut phys_translation, player) = player_query.into_inner();
+
+    if phys_translation.x > WIDTH * 2.
+        || phys_translation.x < (WIDTH / 2.) * -1.
+        || phys_translation.y < (HEIGHT / 2.) * -1.
+        || phys_translation.y > HEIGHT * 2.
+    {
+        phys_translation.x = player.spawn_x;
+        phys_translation.y = player.spawn_y;
+    }
+
+    for spikes in spikes_query.iter_mut()
+        {
+            let player_center = phys_translation.truncate();
+            let player_aabb = Aabb2d::new(player_center, Vec2::splat(16.));
+
+            let spikes_center = spikes.translation.truncate();
+            let spikes_aabb = Aabb2d::new(spikes_center, Vec2::splat(16.));
+
+            let x_overlaps = player_aabb.min.x < spikes_aabb.max.x && player_aabb.max.x > spikes_aabb.min.x;
+            let y_overlaps = player_aabb.min.y < spikes_aabb.max.y && player_aabb.max.y > spikes_aabb.min.y;
+
+            if x_overlaps && y_overlaps 
+            {
+                phys_translation.x = player.spawn_x;
+                phys_translation.y = player.spawn_y;
+            }
+        }
+
+
 }
 
 fn coyote_time(_time: Res<Time>, player_query: Single<&mut Player>) {
