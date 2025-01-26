@@ -42,6 +42,7 @@ fn main() {
                 check_for_collisions,
                 death_respawn,
                 coyote_time,
+                scale_screen,
             )
                 // `chain`ing systems together runs them in order
                 .chain(),
@@ -117,6 +118,12 @@ struct AnimationIndices {
 
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
+
+fn scale_screen(mut query: Single<&mut OrthographicProjection, With<Camera>>)
+{
+    let mut ortho = query.into_inner();
+    ortho.scale = 0.75;
+}
 
 fn setup(
     mut commands: Commands,
