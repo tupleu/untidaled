@@ -4,14 +4,14 @@ use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::Windo
 
 const TEST_LEVEL: [[i32; 10]; 10] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 2, 0, 0],
     [1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
     [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 0, 1, 0, 1, 1, 1, 1, 0, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [0, 1, 1, 0, 1, 1, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
@@ -50,6 +50,7 @@ fn main() {
             RunFixedMainLoop,
             (
                 handle_input.in_set(RunFixedMainLoopSystem::BeforeFixedMainLoop),
+                flip_sprite.in_set(RunFixedMainLoopSystem::AfterFixedMainLoop),
                 interpolate_rendered_transform.in_set(RunFixedMainLoopSystem::AfterFixedMainLoop),
             ),
         )
@@ -79,6 +80,7 @@ struct Player {
     spawn_y: f32,
     is_grabbing: bool,
     is_grounded: bool,
+    is_left: bool,
     can_jump: bool,
     h_speed: f32,
     jump_force: f32,
@@ -115,7 +117,11 @@ struct AnimationIndices {
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+) {
     commands.spawn(Camera2d);
 
     // commands.spawn(
@@ -125,10 +131,22 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     //     )
     // );
 
+    let texture = asset_server.load("player_idle.png");
+    let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+    let animation_indices = AnimationIndices { first: 0, last: 2 };
     commands.spawn((
+        Sprite::from_atlas_image(
+            texture,
+            TextureAtlas {
+                layout: texture_atlas_layout,
+                index: animation_indices.first,
+            },
+        ),
+        animation_indices,
+        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+        Transform::from_xyz(0., 64., 2.),
         Name::new("Player"),
-        Sprite::from_image(asset_server.load("test.png")),
-        Transform::from_xyz(0., 0., 2.),
         AccumulatedInput::default(),
         Velocity::default(),
         PhysicalTranslation(Vec3::new(0., 64., 2.)),
@@ -139,6 +157,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             spawn_y: 64.,
             is_grabbing: false,
             is_grounded: false,
+            is_left: true,
             can_jump: false,
             jump_force: 210., //jump force? peak peak
             h_speed: 100.,
@@ -156,12 +175,13 @@ fn spawn_level(
     let level = TEST_LEVEL;
     for (i, row) in level.iter().enumerate() {
         for (j, elem) in row.iter().enumerate() {
-            let texture = asset_server.load("bubble-idle-32x32.png");
-            let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
-            let texture_atlas_layout = texture_atlas_layouts.add(layout);
-            let animation_indices = AnimationIndices { first: 0, last: 2 };
             match elem {
                 1 => {
+                    let texture = asset_server.load("bubble-idle-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
                         Sprite::from_atlas_image(
                             texture,
@@ -180,7 +200,29 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
-                2 => {}
+                2 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
                 _ => (),
             }
         }
@@ -225,13 +267,15 @@ fn handle_input(
     player_query: Single<(&mut AccumulatedInput, &mut Velocity, &mut Player)>,
 ) {
     let (mut input, mut velocity, mut player) = player_query.into_inner();
-    // if keyboard_input.pressed(KeyCode::KeyW) {
-    //     input.y += 1.0;
-    // }
+    if keyboard_input.pressed(KeyCode::KeyE) {
+        // player_interact(player);
+    }
     if keyboard_input.pressed(KeyCode::KeyA) {
+        player.is_left = true;
         input.x -= 1.0;
     }
     if keyboard_input.pressed(KeyCode::KeyD) {
+        player.is_left = false;
         input.x += 1.0;
     }
     if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
@@ -241,11 +285,12 @@ fn handle_input(
     } else {
         input.y = 0.;
     }
-
-    // velocity.0 += input.extend(0.0).normalize_or_zero() * 5.;
-    // velocity.0 += input.extend(0.);
-    // println!("1 {:?} {:?}", player.is_grounded, velocity);
 }
+
+// fn player_interact(player: &mut Player) {
+//     let center = physical_translation.truncate();
+//     let aabb = Aabb2d::new(center, Vec2::splat(16.));
+// }
 
 fn advance_physics(
     fixed_time: Res<Time<Fixed>>,
@@ -271,30 +316,6 @@ fn advance_physics(
 
         // Reset the input accumulator, as we are currently consuming all input that happened since the last fixed timestep.
         input.0 = Vec2::ZERO;
-    }
-}
-
-fn interpolate_rendered_transform(
-    fixed_time: Res<Time<Fixed>>,
-    mut query: Query<
-        (
-            &mut Transform,
-            &PhysicalTranslation,
-            &PreviousPhysicalTranslation,
-        ),
-        With<Player>,
-    >,
-) {
-    for (mut transform, current_physical_translation, previous_physical_translation) in
-        query.iter_mut()
-    {
-        let previous = previous_physical_translation.0;
-        let current = current_physical_translation.0;
-        // The overstep fraction is a value between 0 and 1 that tells us how far we are between two fixed timesteps.
-        let alpha = fixed_time.overstep_fraction();
-
-        let rendered_translation = previous.lerp(current, alpha);
-        transform.translation = rendered_translation;
     }
 }
 
@@ -445,5 +466,33 @@ fn animate_sprite(
                 };
             }
         }
+    }
+}
+
+fn flip_sprite(player_query: Single<(&mut Sprite, &Player)>) {
+    let (mut sprite, player) = player_query.into_inner();
+    sprite.flip_x = !player.is_left;
+}
+fn interpolate_rendered_transform(
+    fixed_time: Res<Time<Fixed>>,
+    mut query: Query<
+        (
+            &mut Transform,
+            &PhysicalTranslation,
+            &PreviousPhysicalTranslation,
+        ),
+        With<Player>,
+    >,
+) {
+    for (mut transform, current_physical_translation, previous_physical_translation) in
+        query.iter_mut()
+    {
+        let previous = previous_physical_translation.0;
+        let current = current_physical_translation.0;
+        // The overstep fraction is a value between 0 and 1 that tells us how far we are between two fixed timesteps.
+        let alpha = fixed_time.overstep_fraction();
+
+        let rendered_translation = previous.lerp(current, alpha);
+        transform.translation = rendered_translation;
     }
 }
