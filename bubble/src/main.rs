@@ -403,11 +403,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(180f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -432,11 +436,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(180f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -461,11 +469,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(180f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -490,11 +502,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -519,11 +535,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -548,11 +568,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -577,11 +601,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(-90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -606,11 +634,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(-90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -635,11 +667,15 @@ fn spawn_level(
                                 index: animation_indices.first,
                             },
                         ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
-                            2.,
-                        ),
+                        Transform {
+                            translation: Vec3::new(
+                                BSIZE as f32 * j as f32 - 160.,
+                                -(BSIZE as f32 * i as f32 - 160.),
+                                2.,
+                            ),
+                            rotation: Quat::from_rotation_z(-90f32.to_radians()),
+                            scale: Vec3::ONE,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
