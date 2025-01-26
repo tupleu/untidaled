@@ -4,8 +4,8 @@ use bevy::{asset::io::memory::Dir, color::palettes::css::*, math::bounding::*, p
 
 const TEST_LEVEL: [[i32; 10]; 10] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
-    [0, 1, 0, 3, 0, 0, 0, 2, 0, 0],
+    [0, 3, 3, 3, 0, 0, 0, 2, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 2, 0, 0],
     [1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
     [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 0, 1, 0, 1, 1, 1, 1, 0, 0],
@@ -48,7 +48,7 @@ fn main() {
                 death_respawn,
                 coyote_time,
                 scale_screen,
-                //wind_collision,
+                wind_collision,
             )
                 // `chain`ing systems together runs them in order
                 .chain(),
@@ -117,7 +117,8 @@ struct Fan {
 
 #[derive(Component)]
 struct Wind {
-    direction: Direction
+    direction: Direction,
+    force: f32,
 }
 
 #[derive(Component)]
@@ -187,7 +188,7 @@ fn setup(
 }
 
 fn wind_collision(
-    mut bubble_query: Query<&mut Transform, With<Bubble>>, mut wind_query: Query<&mut Transform, With<Wind>>
+    mut bubble_query: Query<&mut Transform, With<Bubble>>, mut wind_query: Query<(&mut Transform, &Wind), (With<Wind>, Without<Bubble>)>
 )
 {
     for mut bubble in bubble_query.iter_mut()
@@ -195,7 +196,7 @@ fn wind_collision(
         let bubble_center = bubble.translation.truncate();
         let bubble_aabb = Aabb2d::new(bubble_center, Vec2::splat(16.));
 
-        for mut wind in wind_query.iter_mut()
+        for (mut wind, windprops) in wind_query.iter_mut()
         {
             let wind_center = wind.translation.truncate();
             let wind_aabb = Aabb2d::new(wind_center, Vec2::splat(16.));
@@ -205,7 +206,28 @@ fn wind_collision(
 
             if x_overlaps && y_overlaps 
             {
+                match windprops.direction
+                {
+                    Direction::Down =>
+                    {
+                        bubble.translation.y -= windprops.force
+                    }
 
+                    Direction::Up =>
+                    {
+                        bubble.translation.y += windprops.force
+                    }
+
+                    Direction::Right =>
+                    {
+                        bubble.translation.x += windprops.force
+                    }
+
+                    Direction::Left =>
+                    {
+                        bubble.translation.x -= windprops.force
+                    }
+                }
             }
         }
 
@@ -258,7 +280,8 @@ fn spawn_level(
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
                         Wind{
-                            direction: Direction::Up
+                            direction: Direction::Up,
+                            force: LOW_WIND,
                         },
 
                         Sprite::from_atlas_image(
