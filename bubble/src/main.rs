@@ -93,22 +93,22 @@ const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 32, 32, 36,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 32, 32, 35,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34, 35, 35, 36,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 37, 38, 35, 35,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34, 36,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 37, 35,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 33, 00, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 36,
+        36, 00, 00, 00, 00, 00, 00, 33, 00, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 11, 12, 00, 00, 33, 00, 21, 21, 21, 21, 21, 21, 21, 21, 21, 00, 00, 99, 34,
+        36, 11, 12, 00, 00, 32, 00, 21, 21, 21, 21, 21, 21, 21, 21, 00, 00, 00, 99, 34,
     ],
     [
-        35, 32, 32, 33, 32, 32, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32, 35,
+        35, 32, 32, 32, 32, 35, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 35,
     ],
 ];
 
@@ -195,16 +195,16 @@ const LEVEL_5: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 15, 00, 00, 00, 00, 15, 00, 33, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 15, 00, 00, 00, 00, 15, 00, 32, 35,
     ],
     [
-        36, 00, 00, 00, 00, 00, 33, 15, 00, 00, 00, 15, 00, 00, 00, 00, 15, 00, 00, 34,
+        36, 00, 00, 00, 00, 00, 31, 15, 00, 00, 00, 15, 00, 00, 00, 00, 15, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 33, 00, 15, 00, 00, 00, 15, 00, 00, 00, 00, 15, 00, 00, 34,
+        36, 00, 00, 00, 00, 31, 35, 15, 00, 12, 00, 15, 00, 12, 00, 00, 15, 00, 00, 34,
     ],
     [
-        36, 11, 00, 12, 00, 00, 12, 00, 12, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 34,
+        36, 11, 00, 00, 00, 12, 12, 40, 00, 42, 00, 40, 00, 42, 00, 00, 40, 00, 00, 34,
     ],
     [
         35, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 35,
@@ -424,7 +424,7 @@ fn spawn_level(
                         Transform::from_xyz(
                             BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
                             -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
-                            2.,
+                            10.,
                         ),
                         Name::new("Player"),
                         AccumulatedInput::default(),
@@ -432,7 +432,7 @@ fn spawn_level(
                         PhysicalTranslation(Vec3::new(
                             BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
                             -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
-                            2.,
+                            10.,
                         )),
                         PreviousPhysicalTranslation::default(),
                         Player {
@@ -1303,7 +1303,7 @@ fn handle_input(
             position.y,
         );
         let aabb = Aabb2d::new(center, Vec2::splat(16.));
-        gizmos.rect_2d(center, aabb.half_size() * 2., RED);
+        // gizmos.rect_2d(center, aabb.half_size() * 2., RED);
         for (bubble_transformation, bubble) in bubble_query.iter() {
             let bubble_center = bubble_transformation.translation.truncate();
             let bubble_aabb = Aabb2d::new(bubble_center, Vec2::splat(16.));
@@ -1456,7 +1456,7 @@ fn check_for_collisions(
 
     let center = physical_translation.truncate();
     let aabb = Aabb2d::new(center, Vec2::splat(16.));
-    gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
+    // gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
 
     // player.is_grounded = false;
     let mut check_once = true;
@@ -1562,11 +1562,11 @@ fn check_for_collisions(
                 velocity.x = 0.;
                 physical_translation.x -= displacement;
             }
-            gizmos.rect_2d(
-                collider_center,
-                collider_aabb.half_size() * 2.,
-                SPRING_GREEN,
-            );
+            // gizmos.rect_2d(
+            //     collider_center,
+            //     collider_aabb.half_size() * 2.,
+            //     SPRING_GREEN,
+            // );
             break;
         }
     }
@@ -1582,7 +1582,7 @@ fn check_for_exit(
 
     let center = physical_translation.truncate();
     let aabb = Aabb2d::new(center, Vec2::splat(16.));
-    gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
+    // gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
 
     // player.is_grounded = false;
     for exit in exit_query.iter() {
