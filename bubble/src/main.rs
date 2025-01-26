@@ -79,10 +79,11 @@ struct Player {
     coyote_timer: Timer,
     spawn_x: f32,
     spawn_y: f32,
-    is_grabbing: bool,
     is_grounded: bool,
     is_left: bool,
     is_moving: bool,
+    is_bubbling: bool,
+    bubbled: bool,
     can_jump: bool,
     h_speed: f32,
     jump_force: f32,
@@ -119,10 +120,9 @@ struct AnimationIndices {
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
 
-fn scale_screen(mut query: Single<&mut OrthographicProjection, With<Camera>>)
-{
+fn scale_screen(mut query: Single<&mut OrthographicProjection, With<Camera>>) {
     let mut ortho = query.into_inner();
-    ortho.scale = 0.75;
+    ortho.scale = 0.5;
 }
 
 fn setup(
@@ -139,10 +139,10 @@ fn setup(
     //     )
     // );
 
-    let texture = asset_server.load("player_idlemove.png");
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 2, None, None);
+    let texture = asset_server.load("playerRemake-Sheet.png");
+    let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 4, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let animation_indices: AnimationIndices = AnimationIndices { first: 0, last: 2 };
+    let animation_indices: AnimationIndices = AnimationIndices { first: 9, last: 11 };
     commands.spawn((
         Sprite::from_atlas_image(
             texture,
@@ -163,10 +163,11 @@ fn setup(
             coyote_timer: Timer::new(Duration::from_secs_f32(2.), TimerMode::Repeating),
             spawn_x: 0.,
             spawn_y: 64.,
-            is_grabbing: false,
             is_grounded: false,
             is_left: true,
             is_moving: false,
+            is_bubbling: false,
+            bubbled: false,
             can_jump: false,
             jump_force: 210., //jump force? peak peak
             h_speed: 100.,
@@ -304,7 +305,7 @@ fn handle_input(
         input.y = 0.;
     }
 
-    if keyboard_input.just_pressed(KeyCode::KeyE) {
+    if keyboard_input.just_pressed(KeyCode::ShiftLeft) {
         let center = Vec2::new(
             position.x + if player.is_left { -32. } else { 32. },
             position.y,
@@ -320,10 +321,20 @@ fn handle_input(
 
             // if intersects, move back by larger axis
             if x_overlaps && y_overlaps && center.distance(bubble_center) < 16. {
+                if player.is_bubbling {
+                    return;
+                }
+                player.bubbled = true;
+                player.is_bubbling = true;
                 commands.entity(bubble).despawn();
                 return;
             }
         }
+        if !player.is_bubbling {
+            return;
+        }
+        player.bubbled = true;
+        player.is_bubbling = false;
         let texture = asset_server.load("bubble-idle-32x32.png");
         let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
         let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -375,24 +386,48 @@ fn advance_physics(
     current_physical_translation.0 +=
         (velocity.0 + input.extend(0.) * player.h_speed) * fixed_time.delta_secs();
 
-    if input.x != 0. {
-        if !player.is_moving {
+    if player.is_bubbling {
+        if input.x != 0. {
+            if player.bubbled || !player.is_moving {
+                player.is_moving = true;
+                player.bubbled = false;
+                if let Some(atlas) = &mut sprite.texture_atlas {
+                    atlas.index = 3;
+                }
+            }
+            indices.first = 3;
+            indices.last = 5;
+        } else {
+            if player.bubbled || player.is_moving {
+                player.is_moving = false;
+                player.bubbled = false;
+                if let Some(atlas) = &mut sprite.texture_atlas {
+                    atlas.index = 0;
+                }
+            }
+            indices.first = 0;
+            indices.last = 2;
+        }
+    } else if input.x != 0. {
+        if player.bubbled || !player.is_moving {
             player.is_moving = true;
+            player.bubbled = false;
             if let Some(atlas) = &mut sprite.texture_atlas {
-                atlas.index = 3;
+                atlas.index = 6;
             }
         }
-        indices.first = 3;
-        indices.last = 5;
+        indices.first = 6;
+        indices.last = 8;
     } else {
-        if player.is_moving {
+        if player.bubbled || player.is_moving {
             player.is_moving = false;
+            player.bubbled = false;
             if let Some(atlas) = &mut sprite.texture_atlas {
-                atlas.index = 0;
+                atlas.index = 9;
             }
         }
-        indices.first = 0;
-        indices.last = 2;
+        indices.first = 9;
+        indices.last = 11;
     }
 
     // Reset the input accumulator, as we are currently consuming all input that happened since the last fixed timestep.
