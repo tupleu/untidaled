@@ -24,101 +24,134 @@ const TEST_LEVEL: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        00, 00, 00, 00, 00, 00, 00, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        00, 03, 00, 00, 00, 00, 00, 03, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        00, 32, 00, 00, 00, 00, 00, 32, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        03, 00, 00, 00, 09, 00, 00, 01, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        32, 00, 00, 00, 09, 00, 00, 01, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        03, 00, 00, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+        32, 00, 00, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32,
     ],
     [
-        03, 00, 03, 00, 03, 03, 03, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        32, 00, 32, 00, 32, 32, 32, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+        32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32,
     ],
     [
-        00, 03, 03, 00, 03, 03, 00, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        00, 32, 32, 00, 32, 32, 00, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        00, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 00,
+        00, 00, 00, 00, 00, 00, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 00,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 00,
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 00,
     ],
 ];
 
 const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
     [
-        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+        35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 35,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 33, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        03, 01, 00, 02, 00, 05, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 00,
+        36, 01, 00, 02, 00, 31, 33, 00, 00, 00, 00, 34, 36, 00, 00, 00, 00, 00, 99, 34,
     ],
     [
-        03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03,
+        35, 32, 32, 32, 32, 35, 35, 32, 32, 32, 32, 35, 35, 32, 32, 32, 32, 32, 32, 35,
     ],
 ];
 
 const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 35,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        36, 01, 00, 02, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
     ],
     [
-        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        35, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 35,
     ],
 ];
 
-const LEVEL_LIST: [[[i32; LEVEL_WIDTH]; LEVEL_HEIGHT]; 3] = [TEST_LEVEL, LEVEL_1, LEVEL_2];
+const LEVEL_3: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
+    [
+        35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 35,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 01, 00, 02, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
+    ],
+    [
+        35, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 35,
+    ],
+];
+
+const LEVEL_LIST: [[[i32; LEVEL_WIDTH]; LEVEL_HEIGHT]; 4] = [TEST_LEVEL, LEVEL_1, LEVEL_2, LEVEL_3];
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
 enum GameState {
@@ -385,33 +418,6 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
-                3 => {
-                    let texture = asset_server.load("platform.aesprite.png");
-                    let layout =
-                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
-                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-                    let animation_indices = AnimationIndices { first: 0, last: 2 };
-                    commands.spawn((
-                        StateScoped(GameState::Playing),
-                        Sprite::from_atlas_image(
-                            texture,
-                            TextureAtlas {
-                                layout: texture_atlas_layout,
-                                index: animation_indices.first,
-                            },
-                        ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
-                            2.,
-                        ),
-                        Collider,
-                        Bubble,
-                        animation_indices,
-                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
-                    ));
-                }
-                //3 Platform Here
                 //Spike Objects
                 4 => {
                     let texture = asset_server.load("spikes.png");
@@ -823,6 +829,204 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
+                31 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 0,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
+                32 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 1,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
+                33 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 2,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
+                34 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 3,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
+                35 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 4,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
+                36 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 5,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
+                37 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 6,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
+                38 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 7,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
+                39 => {
+                    let texture = asset_server.load("platform.aesprite.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 8,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                    ));
+                }
                 99 => {
                     let texture = asset_server.load("rustacean.png");
                     let layout =
@@ -941,6 +1145,7 @@ fn handle_input(
         &mut Player,
     )>,
     bubble_query: Query<(&Transform, Entity), With<Bubble>>,
+    collider_query: Query<&Transform, (With<Collider>, Without<Player>)>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
         ev_nextlevel.send(NextLevelEvent(0));
@@ -1001,6 +1206,20 @@ fn handle_input(
         if !player.is_bubbling {
             return;
         }
+        // check if bubble would collide
+        for collider in collider_query.iter() {
+            let collider_center = collider.translation.truncate();
+            let collider_aabb = Aabb2d::new(collider_center, Vec2::splat(16.));
+
+            let x_overlaps = aabb.min.x < collider_aabb.max.x && aabb.max.x > collider_aabb.min.x;
+            let y_overlaps = aabb.min.y < collider_aabb.max.y && aabb.max.y > collider_aabb.min.y;
+
+            // if intersects, move back by larger axis
+            if x_overlaps && y_overlaps {
+                return;
+            }
+        }
+
         player.bubbled = true;
         player.is_bubbling = false;
         let texture = asset_server.load("bubble-idle-32x32.png");
