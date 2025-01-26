@@ -1,6 +1,6 @@
 use std::{io::empty, ptr::null, time::Duration};
 
-use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
+use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, utils::tracing::span::Id, window::WindowResolution};
 
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
@@ -70,7 +70,7 @@ struct Bubble;
 #[derive(Component)]
 struct BubbleSpawner
 {
-    current_bubble: Bubble,
+    current_bubble: Option<Entity>,
     spawn_height: f32,
     spawn_time: Timer
 }
@@ -131,8 +131,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Sprite::from_image(asset_server.load("spawner.png")),
         Transform::from_xyz(-32., 0., 2.),
         BubbleSpawner{
-            current_bubble: (),
-            spawn_height: 10.,
+            current_bubble: None,
+            spawn_height: 30.,
             spawn_time: Timer::new(Duration::from_secs_f32(2.), TimerMode::Repeating),
         },
         Collider,
@@ -158,13 +158,31 @@ fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>
     velocity.y -= player.gravity * time.delta_secs();
 }
 
-fn spawn_bubbles(spawner_query: Single<(&mut BubbleSpawner)>, time: Res<Time>)
+fn spawn_bubbles(spawner_query: Single<(&mut BubbleSpawner, &Transform)>, time: Res<Time>, mut commands: Commands, asset_server: Res<AssetServer>)
 {
-    let mut _spawner = spawner_query.into_inner();
+    let (mut spawner, transform) = spawner_query.into_inner();
 
-    if _spawner.current_bubble == ()
+    match &spawner.current_bubble
     {
-        
+        None => 
+        {
+            spawner.spawn_time.tick(time.delta());
+
+            if spawner.spawn_time.finished()
+            {
+                spawner.current_bubble = Some(commands.spawn((
+                    Name::new("Bubble"),
+                    Sprite::from_image(asset_server.load("bubble.png")),
+                    Transform::from_xyz(transform.translation.x, transform.translation.y + spawner.spawn_height, 2.),
+                    Bubble,
+                    Collider)).id());
+            }
+
+        },
+        Some(id) => 
+        {
+
+        }
     }
 
 }
@@ -203,9 +221,6 @@ fn handle_input(
     player_query: Single<(&mut AccumulatedInput, &mut Velocity, &mut Player)>,
 ) {
     let (mut input, mut velocity, mut player) = player_query.into_inner();
-    if keyboard_input.pressed(KeyCode::KeyW) {
-        input.y += 1.0;
-    }
     if keyboard_input.pressed(KeyCode::KeyA) {
         input.x -= 1.0;
     }
@@ -220,8 +235,6 @@ fn handle_input(
         input.y = 0.;
     }
 
-    // velocity.0 += input.extend(0.0).normalize_or_zero() * 5.;
-    // velocity.0 += input.extend(0.);
     println!("1 {:?} {:?}", player.is_grounded, velocity);
 }
 
