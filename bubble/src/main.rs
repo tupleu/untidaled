@@ -1,6 +1,12 @@
 use std::time::Duration;
 
-use bevy::{asset::io::memory::Dir, color::palettes::css::*, math::bounding::*, prelude::*, window::{WindowFocused, WindowResolution}};
+use bevy::{
+    asset::io::memory::Dir,
+    color::palettes::css::*,
+    math::bounding::*,
+    prelude::*,
+    window::{WindowFocused, WindowResolution},
+};
 
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
@@ -14,42 +20,102 @@ const MID_WIND: f32 = 2.;
 const HI_WIND: f32 = 3.;
 
 const TEST_LEVEL: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 3, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 0, 9, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    [2, 0, 2, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    [0, 2, 2, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 03, 00, 00, 00, 00, 00, 03, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        03, 00, 00, 00, 09, 00, 00, 01, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        03, 00, 00, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+    ],
+    [
+        03, 00, 03, 00, 03, 03, 03, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+    ],
+    [
+        00, 03, 03, 00, 03, 03, 00, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 00,
+    ],
 ];
 
 const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 9, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 39, 0],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    [
+        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03,
+    ],
+    [
+        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        03, 01, 00, 02, 00, 05, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 00,
+    ],
+    [
+        03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03, 03,
+    ],
 ];
 
 const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
-    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
+    [
+        00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+    ],
 ];
 
 const LEVEL_LIST: [[[i32; LEVEL_WIDTH]; LEVEL_HEIGHT]; 3] = [TEST_LEVEL, LEVEL_1, LEVEL_2];
@@ -195,49 +261,34 @@ fn setup(mut commands: Commands) {
 }
 
 fn wind_collision(
-    mut bubble_query: Query<&mut Transform, With<Bubble>>, mut wind_query: Query<(&mut Transform, &Wind), (With<Wind>, Without<Bubble>)>
-)
-{
-    for mut bubble in bubble_query.iter_mut()
-    {
+    mut bubble_query: Query<&mut Transform, With<Bubble>>,
+    mut wind_query: Query<(&mut Transform, &Wind), (With<Wind>, Without<Bubble>)>,
+) {
+    for mut bubble in bubble_query.iter_mut() {
         let bubble_center = bubble.translation.truncate();
         let bubble_aabb = Aabb2d::new(bubble_center, Vec2::splat(16.));
 
-        for (wind, windprops) in wind_query.iter_mut()
-        {
+        for (wind, windprops) in wind_query.iter_mut() {
             let wind_center = wind.translation.truncate();
             let wind_aabb = Aabb2d::new(wind_center, Vec2::splat(16.));
 
-            let x_overlaps = bubble_aabb.min.x < wind_aabb.max.x && bubble_aabb.max.x > wind_aabb.min.x;
-            let y_overlaps = bubble_aabb.min.y < wind_aabb.max.y && bubble_aabb.max.y > wind_aabb.min.y;
+            let x_overlaps =
+                bubble_aabb.min.x < wind_aabb.max.x && bubble_aabb.max.x > wind_aabb.min.x;
+            let y_overlaps =
+                bubble_aabb.min.y < wind_aabb.max.y && bubble_aabb.max.y > wind_aabb.min.y;
 
-            if x_overlaps && y_overlaps 
-            {
-                match windprops.direction
-                {
-                    Direction::Down =>
-                    {
-                        bubble.translation.y -= windprops.force
-                    }
+            if x_overlaps && y_overlaps {
+                match windprops.direction {
+                    Direction::Down => bubble.translation.y -= windprops.force,
 
-                    Direction::Up =>
-                    {
-                        bubble.translation.y += windprops.force
-                    }
+                    Direction::Up => bubble.translation.y += windprops.force,
 
-                    Direction::Right =>
-                    {
-                        bubble.translation.x += windprops.force
-                    }
+                    Direction::Right => bubble.translation.x += windprops.force,
 
-                    Direction::Left =>
-                    {
-                        bubble.translation.x -= windprops.force
-                    }
+                    Direction::Left => bubble.translation.x -= windprops.force,
                 }
             }
         }
-
     }
 
     //if colliding with wind
@@ -334,15 +385,42 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
-                //3 Platform Here
-                //Spike Objects
-                4 =>{
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                3 => {
+                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        Collider,
+                        Bubble,
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //3 Platform Here
+                //Spike Objects
+                4 => {
+                    let texture = asset_server.load("spikes.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
                         Spike,
                         Sprite::from_atlas_image(
                             texture,
@@ -352,8 +430,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                             2.,
                         ),
                         animation_indices,
@@ -370,11 +448,10 @@ fn spawn_level(
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
                         StateScoped(GameState::Playing),
-                        Wind{
+                        Wind {
                             direction: Direction::Up,
                             force: LOW_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -383,8 +460,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                             2.,
                         ),
                         animation_indices,
@@ -399,11 +476,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Up,
                             force: MID_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -412,8 +489,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                             2.,
                         ),
                         animation_indices,
@@ -428,11 +505,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Up,
                             force: HI_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -441,8 +518,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 160.,
-                            -(BSIZE as f32 * i as f32 - 160.),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                             2.,
                         ),
                         animation_indices,
@@ -457,11 +534,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Down,
                             force: LOW_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -471,8 +548,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(180f32.to_radians()),
@@ -490,11 +567,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Down,
                             force: MID_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -504,8 +581,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(180f32.to_radians()),
@@ -523,11 +600,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Down,
                             force: HI_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -537,8 +614,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(180f32.to_radians()),
@@ -556,11 +633,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Right,
                             force: LOW_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -570,8 +647,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(90f32.to_radians()),
@@ -589,11 +666,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Right,
                             force: MID_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -603,8 +680,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(90f32.to_radians()),
@@ -622,11 +699,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Right,
                             force: HI_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -636,8 +713,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(90f32.to_radians()),
@@ -655,11 +732,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Left,
                             force: LOW_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -669,8 +746,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(-90f32.to_radians()),
@@ -688,11 +765,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Left,
                             force: MID_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -702,8 +779,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(-90f32.to_radians()),
@@ -721,11 +798,11 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
-                        Wind{
+                        StateScoped(GameState::Playing),
+                        Wind {
                             direction: Direction::Left,
                             force: HI_WIND,
                         },
-
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -735,8 +812,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 160.,
-                                -(BSIZE as f32 * i as f32 - 160.),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(-90f32.to_radians()),
@@ -744,6 +821,31 @@ fn spawn_level(
                         },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                99 => {
+                    let texture = asset_server.load("rustacean.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                        Exit,
                     ));
                 }
                 _ => (),
@@ -779,7 +881,10 @@ fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>
     velocity.y -= player.gravity * time.delta_secs();
 }
 
-fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>, mut spikes_query: Query<&mut Transform, With<Spike>>) {
+fn death_respawn(
+    player_query: Single<(&mut PhysicalTranslation, &Player)>,
+    mut spikes_query: Query<&mut Transform, With<Spike>>,
+) {
     let (mut phys_translation, player) = player_query.into_inner();
 
     if phys_translation.x > WIDTH * 2.
@@ -791,25 +896,23 @@ fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>, mut 
         phys_translation.y = player.spawn_y;
     }
 
-    for spikes in spikes_query.iter_mut()
-        {
-            let player_center = phys_translation.truncate();
-            let player_aabb = Aabb2d::new(player_center, Vec2::splat(16.));
+    for spikes in spikes_query.iter_mut() {
+        let player_center = phys_translation.truncate();
+        let player_aabb = Aabb2d::new(player_center, Vec2::splat(16.));
 
-            let spikes_center = spikes.translation.truncate();
-            let spikes_aabb = Aabb2d::new(spikes_center, Vec2::splat(16.));
+        let spikes_center = spikes.translation.truncate();
+        let spikes_aabb = Aabb2d::new(spikes_center, Vec2::splat(16.));
 
-            let x_overlaps = player_aabb.min.x < spikes_aabb.max.x && player_aabb.max.x > spikes_aabb.min.x;
-            let y_overlaps = player_aabb.min.y < spikes_aabb.max.y && player_aabb.max.y > spikes_aabb.min.y;
+        let x_overlaps =
+            player_aabb.min.x < spikes_aabb.max.x && player_aabb.max.x > spikes_aabb.min.x;
+        let y_overlaps =
+            player_aabb.min.y < spikes_aabb.max.y && player_aabb.max.y > spikes_aabb.min.y;
 
-            if x_overlaps && y_overlaps 
-            {
-                phys_translation.x = player.spawn_x;
-                phys_translation.y = player.spawn_y;
-            }
+        if x_overlaps && y_overlaps {
+            phys_translation.x = player.spawn_x;
+            phys_translation.y = player.spawn_y;
         }
-
-
+    }
 }
 
 fn coyote_time(_time: Res<Time>, player_query: Single<&mut Player>) {
