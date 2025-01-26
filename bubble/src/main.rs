@@ -269,6 +269,8 @@ fn handle_input(
     mut gizmos: Gizmos,
     mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
+    asset_server: Res<AssetServer>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     player_query: Single<(
         &mut AccumulatedInput,
         &PhysicalTranslation,
@@ -287,7 +289,15 @@ fn handle_input(
         input.x += 1.0;
     }
 
-    if keyboard_input.pressed(KeyCode::KeyE) {
+    if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
+        velocity.y = player.jump_force;
+        player.is_grounded = false;
+        player.can_jump = false;
+    } else {
+        input.y = 0.;
+    }
+
+    if keyboard_input.just_pressed(KeyCode::KeyE) {
         let center = Vec2::new(
             position.x + if player.is_left { -32. } else { 32. },
             position.y,
@@ -304,15 +314,31 @@ fn handle_input(
             // if intersects, move back by larger axis
             if x_overlaps && y_overlaps && center.distance(bubble_center) < 16. {
                 commands.entity(bubble).despawn();
+                return;
             }
         }
-    }
-    if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
-        velocity.y = player.jump_force;
-        player.is_grounded = false;
-        player.can_jump = false;
-    } else {
-        input.y = 0.;
+        let texture = asset_server.load("bubble-idle-32x32.png");
+        let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+        let texture_atlas_layout = texture_atlas_layouts.add(layout);
+        let animation_indices = AnimationIndices { first: 0, last: 2 };
+        commands.spawn((
+            Sprite::from_atlas_image(
+                texture,
+                TextureAtlas {
+                    layout: texture_atlas_layout,
+                    index: animation_indices.first,
+                },
+            ),
+            Transform::from_xyz(
+                f32::round(center.x / 32.) * 32.,
+                f32::round(center.y / 32.) * 32.,
+                2.,
+            ),
+            Collider,
+            Bubble,
+            animation_indices,
+            AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+        ));
     }
 }
 
