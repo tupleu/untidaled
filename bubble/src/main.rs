@@ -1,12 +1,6 @@
 use std::{any::Any, time::Duration};
 
-use bevy::{
-    asset::io::memory::Dir,
-    color::palettes::css::*,
-    math::bounding::*,
-    prelude::*,
-    window::{WindowFocused, WindowResolution},
-};
+use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
 
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
@@ -30,10 +24,10 @@ const TEST_LEVEL: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         00, 32, 00, 00, 00, 00, 00, 32, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        32, 00, 00, 00, 09, 00, 00, 01, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        32, 00, 00, 00, 19, 00, 00, 11, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        32, 00, 00, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32,
+        32, 00, 00, 32, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32,
     ],
     [
         32, 00, 32, 00, 32, 32, 32, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
@@ -45,7 +39,7 @@ const TEST_LEVEL: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         00, 32, 32, 00, 32, 32, 00, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        00, 00, 00, 00, 00, 00, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 00,
+        00, 00, 00, 00, 00, 00, 32, 00, 00, 00, 00, 00, 00, 00, 14, 00, 00, 00, 99, 00,
     ],
     [
         00, 00, 00, 00, 00, 00, 00, 00, 00, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 00,
@@ -78,7 +72,7 @@ const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 33, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 01, 00, 02, 00, 31, 33, 00, 00, 00, 00, 34, 36, 00, 00, 00, 00, 00, 99, 34,
+        36, 11, 00, 12, 00, 31, 33, 00, 42, 00, 00, 34, 36, 00, 00, 00, 00, 00, 99, 34,
     ],
     [
         35, 32, 32, 32, 32, 35, 35, 32, 32, 32, 32, 35, 35, 32, 32, 32, 32, 32, 32, 35,
@@ -99,22 +93,22 @@ const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 32, 32, 36,
     ],
     [
-        36, 00, 00, 00, 00, 00, 33, 33, 00, 00, 00, 33, 00, 00, 00, 33, 33, 33, 33, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34, 35, 35, 36,
     ],
     [
-        36, 00, 00, 00, 00, 33, 00, 33, 00, 00, 00, 33, 00, 00, 00, 33, 33, 33, 33, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34, 36,
     ],
     [
-        36, 00, 00, 00, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 33, 33, 33, 34,
+        36, 00, 00, 00, 00, 00, 00, 33, 00, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 36,
     ],
     [
-        36, 01, 33, 02, 00, 00, 00, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 00, 99, 34,
+        36, 11, 12, 00, 00, 33, 00, 21, 21, 21, 21, 21, 21, 21, 21, 21, 00, 00, 99, 34,
     ],
     [
-        35, 32, 32, 32, 32, 35, 35, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32, 32, 35,
+        35, 32, 32, 33, 32, 32, 32, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32, 35,
     ],
 ];
 
@@ -144,7 +138,7 @@ const LEVEL_3: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 01, 00, 02, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
+        36, 11, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
     ],
     [
         35, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 35,
@@ -234,8 +228,6 @@ struct Collider;
 #[derive(Component)]
 struct Player {
     coyote_timer: Timer,
-    spawn_x: f32,
-    spawn_y: f32,
     is_grounded: bool,
     is_left: bool,
     is_moving: bool,
@@ -297,14 +289,14 @@ fn setup(mut commands: Commands) {
 }
 
 fn wind_collision(
-    mut bubble_query: Query<(&mut Transform, &mut Bubble), With<Bubble>>,
-    mut wind_query: Query<(Entity, &mut Transform, &Wind), (With<Wind>, Without<Bubble>)>,
+    mut bubble_query: Query<&mut Transform, With<Bubble>>,
+    mut wind_query: Query<(&mut Transform, &Wind), Without<Bubble>>,
 ) {
-    for (mut bubble, mut bubbleprops) in bubble_query.iter_mut() {
+    for mut bubble in bubble_query.iter_mut() {
         let bubble_center = bubble.translation.truncate();
         let bubble_aabb = Aabb2d::new(bubble_center, Vec2::splat(16.));
 
-        for (windentity, wind, windprops) in wind_query.iter_mut() {
+        for (wind, windprops) in wind_query.iter_mut() {
             let wind_center = wind.translation.truncate();
             let wind_aabb = Aabb2d::new(wind_center, Vec2::splat(16.));
 
@@ -325,9 +317,6 @@ fn wind_collision(
                     Direction::Left => bubble.translation.x -= windprops.force,
                 }
             }
-            else {
-                bubbleprops.current_wind = None;
-            }
         }
     }
 
@@ -346,7 +335,7 @@ fn spawn_level(
             match elem {
                 //0 is empty
                 //Player
-                1 => {
+                11 => {
                     let texture = asset_server.load("playerRemake-Sheet.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 4, None, None);
@@ -383,8 +372,6 @@ fn spawn_level(
                                 Duration::from_secs_f32(2.),
                                 TimerMode::Repeating,
                             ),
-                            spawn_x: 0.,
-                            spawn_y: 64.,
                             is_grounded: false,
                             is_left: false,
                             is_moving: false,
@@ -399,7 +386,7 @@ fn spawn_level(
                     ));
                 }
                 //Bubble Objects
-                2 => {
+                12 => {
                     let texture = asset_server.load("bubble-idle-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -428,43 +415,13 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
-                3 => {
-                    let texture = asset_server.load("platform.aesprite.png");
-                    let layout =
-                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
-                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-                    let animation_indices = AnimationIndices { first: 0, last: 2 };
-                    commands.spawn((
-                        StateScoped(GameState::Playing),
-                        Sprite::from_atlas_image(
-                            texture,
-                            TextureAtlas {
-                                layout: texture_atlas_layout,
-                                index: animation_indices.first,
-                            },
-                        ),
-                        Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
-                            2.,
-                        ),
-                        Collider,
-                        Bubble
-                        {
-                            current_wind: None,
-                        },
-                        animation_indices,
-                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
-                    ));
-                }
                 //3 Platform Here
                 //Spike Objects
-                4 => {
+                14 => {
                     let texture = asset_server.load("spikes.png");
                     let layout =
-                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 1, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
-                    let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Spike,
@@ -472,7 +429,7 @@ fn spawn_level(
                             texture,
                             TextureAtlas {
                                 layout: texture_atlas_layout,
-                                index: animation_indices.first,
+                                index: 0,
                             },
                         ),
                         Transform::from_xyz(
@@ -480,13 +437,11 @@ fn spawn_level(
                             -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                             2.,
                         ),
-                        animation_indices,
-                        Collider,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
                 //Low-Up-Wind
-                5 => {
+                15 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -515,7 +470,7 @@ fn spawn_level(
                     ));
                 }
                 //Mid-Up-Wind
-                6 => {
+                16 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -544,7 +499,7 @@ fn spawn_level(
                     ));
                 }
                 //Hi-Up-Wind
-                7 => {
+                17 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -573,7 +528,7 @@ fn spawn_level(
                     ));
                 }
                 //Low-Down-Wind
-                8 => {
+                18 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -606,7 +561,7 @@ fn spawn_level(
                     ));
                 }
                 //Mid-Down-Wind
-                9 => {
+                19 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -639,7 +594,7 @@ fn spawn_level(
                     ));
                 }
                 //Hi-Down-Wind
-                10 => {
+                20 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -672,7 +627,7 @@ fn spawn_level(
                     ));
                 }
                 //Low-Right-Wind
-                11 => {
+                21 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -705,7 +660,7 @@ fn spawn_level(
                     ));
                 }
                 //Mid-Right-Wind
-                12 => {
+                22 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -738,7 +693,7 @@ fn spawn_level(
                     ));
                 }
                 //Hi-Right-Wind
-                13 => {
+                23 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -771,7 +726,7 @@ fn spawn_level(
                     ));
                 }
                 //Low-Left-Wind
-                14 => {
+                24 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -804,7 +759,7 @@ fn spawn_level(
                     ));
                 }
                 //Mid-Left-Wind
-                15 => {
+                25 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -837,7 +792,7 @@ fn spawn_level(
                     ));
                 }
                 //Hi-Left-Wind
-                16 => {
+                26 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -869,6 +824,7 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
+                // platform
                 31 => {
                     let texture = asset_server.load("platform.aesprite.png");
                     let layout =
@@ -1067,6 +1023,72 @@ fn spawn_level(
                         Collider,
                     ));
                 }
+                // volcano
+                40 => {
+                    let texture = asset_server.load("volcanobuttoncoral.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 5, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 0,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                    ));
+                }
+                // coral
+                41 => {
+                    let texture = asset_server.load("volcanobuttoncoral.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 5, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 3,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                    ));
+                }
+                // tree
+                42 => {
+                    let texture = asset_server.load("volcanobuttoncoral.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 5, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 4,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                    ));
+                }
                 99 => {
                     let texture = asset_server.load("rustacean.png");
                     let layout =
@@ -1126,19 +1148,11 @@ fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>
 }
 
 fn death_respawn(
-    player_query: Single<(&mut PhysicalTranslation, &Player)>,
+    player_query: Single<&PhysicalTranslation, With<Player>>,
     mut spikes_query: Query<&mut Transform, With<Spike>>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
-    let (mut phys_translation, player) = player_query.into_inner();
-
-    if phys_translation.x > WIDTH * 2.
-        || phys_translation.x < (WIDTH / 2.) * -1.
-        || phys_translation.y < (HEIGHT / 2.) * -1.
-        || phys_translation.y > HEIGHT * 2.
-    {
-        phys_translation.x = player.spawn_x;
-        phys_translation.y = player.spawn_y;
-    }
+    let phys_translation = player_query.into_inner();
 
     for spikes in spikes_query.iter_mut() {
         let player_center = phys_translation.truncate();
@@ -1153,8 +1167,7 @@ fn death_respawn(
             player_aabb.min.y < spikes_aabb.max.y && player_aabb.max.y > spikes_aabb.min.y;
 
         if x_overlaps && y_overlaps {
-            phys_translation.x = player.spawn_x;
-            phys_translation.y = player.spawn_y;
+            next_state.set(GameState::GameOver);
         }
     }
 }
