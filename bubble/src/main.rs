@@ -9,17 +9,17 @@ const BSIZE: u32 = 32;
 const LEVEL_WIDTH: usize = 20;
 const LEVEL_HEIGHT: usize = 10;
 
-const TEST_LEVEL: [[i32; 10]; 10] = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 2, 0, 0],
-    [1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 0, 1, 1, 1, 1, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 1, 1, 0, 1, 1, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+const TEST_LEVEL: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 9, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
 ];
 
 const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
@@ -36,7 +36,7 @@ const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
 ];
 
 const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -48,12 +48,16 @@ const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
+const LEVEL_LIST: [[[i32; LEVEL_WIDTH]; LEVEL_HEIGHT]; 3] = [TEST_LEVEL, LEVEL_1, LEVEL_2];
+
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
 enum GameState {
     #[default]
     Playing,
     GameOver,
 }
+#[derive(Resource)]
+struct LevelIndex(usize);
 
 fn main() {
     App::new()
@@ -69,6 +73,7 @@ fn main() {
                     ..default()
                 }),
         )
+        .insert_resource(LevelIndex(1))
         .init_state::<GameState>()
         .enable_state_scoped_entities::<GameState>()
         .add_systems(Startup, setup)
@@ -97,9 +102,13 @@ fn main() {
                 .run_if(in_state(GameState::Playing)),
         )
         .add_systems(OnEnter(GameState::GameOver), reset)
-        .add_systems(Update, animate_sprite)
+        .add_systems(Update, (animate_sprite, next_level))
+        .add_event::<NextLevelEvent>()
         .run();
 }
+
+#[derive(Event)]
+struct NextLevelEvent(i32);
 
 #[derive(Debug, Component, Clone, Copy, PartialEq, Default, Deref, DerefMut)]
 struct AccumulatedInput(Vec2);
@@ -162,7 +171,7 @@ struct AnimationIndices {
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
 
-fn scale_screen(mut query: Single<&mut OrthographicProjection, With<Camera>>) {
+fn scale_screen(query: Single<&mut OrthographicProjection, With<Camera>>) {
     let mut ortho = query.into_inner();
     ortho.scale = 0.5;
 }
@@ -174,9 +183,10 @@ fn setup(mut commands: Commands) {
 fn spawn_level(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    level_index: Res<LevelIndex>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let level = LEVEL_1;
+    let level = LEVEL_LIST[level_index.0];
     for (i, row) in level.iter().enumerate() {
         for (j, elem) in row.iter().enumerate() {
             match elem {
@@ -335,7 +345,7 @@ fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    mut next_state: ResMut<NextState<GameState>>,
+    mut ev_nextlevel: EventWriter<NextLevelEvent>,
     player_query: Single<(
         &mut AccumulatedInput,
         &PhysicalTranslation,
@@ -344,10 +354,19 @@ fn handle_input(
     )>,
     bubble_query: Query<(&Transform, Entity), With<Bubble>>,
 ) {
-    if keyboard_input.pressed(KeyCode::Escape) {
-        next_state.set(GameState::GameOver);
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        ev_nextlevel.send(NextLevelEvent(0));
         return;
     }
+    if keyboard_input.just_pressed(KeyCode::Minus) {
+        ev_nextlevel.send(NextLevelEvent(-1));
+        return;
+    }
+    if keyboard_input.just_pressed(KeyCode::Equal) {
+        ev_nextlevel.send(NextLevelEvent(1));
+        return;
+    }
+
     let (mut input, position, mut velocity, mut player) = player_query.into_inner();
     if keyboard_input.pressed(KeyCode::KeyA) {
         player.is_left = true;
@@ -624,6 +643,24 @@ fn check_for_collisions(
             break;
         }
     }
+}
+
+fn next_level(
+    mut commands: Commands,
+    mut ev_levelup: EventReader<NextLevelEvent>,
+    mut next_state: ResMut<NextState<GameState>>,
+    level_index: Res<LevelIndex>,
+) {
+    if ev_levelup.is_empty() {
+        return;
+    }
+    let mut index = level_index.0 as i32;
+    for ev in ev_levelup.read() {
+        index += ev.0
+    }
+    index = index.clamp(0, LEVEL_LIST.len() as i32 - 1);
+    commands.insert_resource(LevelIndex(index as usize));
+    next_state.set(GameState::GameOver);
 }
 
 fn animate_sprite(
