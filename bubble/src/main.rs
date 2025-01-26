@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{any::Any, time::Duration};
 
 use bevy::{
     asset::io::memory::Dir,
@@ -72,10 +72,10 @@ const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        03, 00, 00, 12, 11, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
-        03, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
+        03, 00, 00, 05, 14, 14, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
     ],
     [
         03, 01, 00, 02, 00, 05, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 00,
@@ -215,7 +215,10 @@ struct Player {
 }
 
 #[derive(Component)]
-struct Bubble;
+struct Bubble
+{
+    current_wind: Option<Entity>
+}
 
 #[derive(Component)]
 struct Exit;
@@ -261,14 +264,14 @@ fn setup(mut commands: Commands) {
 }
 
 fn wind_collision(
-    mut bubble_query: Query<&mut Transform, With<Bubble>>,
-    mut wind_query: Query<(&mut Transform, &Wind), (With<Wind>, Without<Bubble>)>,
+    mut bubble_query: Query<(&mut Transform, &mut Bubble), With<Bubble>>,
+    mut wind_query: Query<(Entity, &mut Transform, &Wind), (With<Wind>, Without<Bubble>)>,
 ) {
-    for mut bubble in bubble_query.iter_mut() {
+    for (mut bubble, mut bubbleprops) in bubble_query.iter_mut() {
         let bubble_center = bubble.translation.truncate();
         let bubble_aabb = Aabb2d::new(bubble_center, Vec2::splat(16.));
 
-        for (wind, windprops) in wind_query.iter_mut() {
+        for (windentity, wind, windprops) in wind_query.iter_mut() {
             let wind_center = wind.translation.truncate();
             let wind_aabb = Aabb2d::new(wind_center, Vec2::splat(16.));
 
@@ -278,6 +281,7 @@ fn wind_collision(
                 bubble_aabb.min.y < wind_aabb.max.y && bubble_aabb.max.y > wind_aabb.min.y;
 
             if x_overlaps && y_overlaps {
+
                 match windprops.direction {
                     Direction::Down => bubble.translation.y -= windprops.force,
 
@@ -287,6 +291,9 @@ fn wind_collision(
 
                     Direction::Left => bubble.translation.x -= windprops.force,
                 }
+            }
+            else {
+                bubbleprops.current_wind = None;
             }
         }
     }
@@ -380,7 +387,10 @@ fn spawn_level(
                             2.,
                         ),
                         Collider,
-                        Bubble,
+                        Bubble
+                        {
+                            current_wind: None
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -406,7 +416,10 @@ fn spawn_level(
                             2.,
                         ),
                         Collider,
-                        Bubble,
+                        Bubble
+                        {
+                            current_wind: None,
+                        },
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -973,7 +986,7 @@ fn handle_input(
         input.y = 0.;
     }
 
-    if keyboard_input.just_pressed(KeyCode::ShiftLeft) {
+    if keyboard_input.just_pressed(KeyCode::ShiftLeft) | keyboard_input.just_pressed(KeyCode::ShiftRight){
         let center = Vec2::new(
             position.x + if player.is_left { -32. } else { 32. },
             position.y,
@@ -1022,7 +1035,7 @@ fn handle_input(
                 2.,
             ),
             Collider,
-            Bubble,
+            Bubble{current_wind: None,},
             animation_indices,
             AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
         ));
