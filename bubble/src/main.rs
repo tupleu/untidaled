@@ -1,11 +1,11 @@
 use std::time::Duration;
 
-use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
+use bevy::{asset::io::memory::Dir, color::palettes::css::*, math::bounding::*, prelude::*, window::{WindowFocused, WindowResolution}};
 
 const TEST_LEVEL: [[i32; 10]; 10] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 2, 0, 0],
+    [0, 1, 0, 3, 0, 0, 0, 2, 0, 0],
     [1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
     [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 0, 1, 0, 1, 1, 1, 1, 0, 0],
@@ -18,6 +18,11 @@ const TEST_LEVEL: [[i32; 10]; 10] = [
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
 const BSIZE: u32 = 32;
+
+const LOW_WIND: f32 = 1.;
+const MID_WIND: f32 = 2.;
+const HI_WIND: f32 = 2.;
+
 
 fn main() {
     App::new()
@@ -43,6 +48,7 @@ fn main() {
                 death_respawn,
                 coyote_time,
                 scale_screen,
+                //wind_collision,
             )
                 // `chain`ing systems together runs them in order
                 .chain(),
@@ -92,7 +98,7 @@ struct Player {
 struct Bubble;
 
 #[derive(Component)]
-struct Spikes;
+struct Spike;
 
 #[derive(Component)]
 enum Direction {
@@ -104,9 +110,12 @@ enum Direction {
 
 #[derive(Component)]
 struct Fan {
-    direction: Direction,
-    strength: f32,
-    distance: f32,
+    direction: Direction
+}
+
+#[derive(Component)]
+struct Wind {
+    direction: Direction
 }
 
 #[derive(Component)]
@@ -117,6 +126,12 @@ struct AnimationIndices {
 
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
+
+fn fan_function(mut query: Single<&mut Fan>)
+{
+    let mut dir = 1;
+    let (mut fan) = query.into_inner();
+}
 
 fn scale_screen(mut query: Single<&mut OrthographicProjection, With<Camera>>)
 {
@@ -130,13 +145,6 @@ fn setup(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     commands.spawn(Camera2d);
-
-    // commands.spawn(
-    //     (
-    //         Fan,
-    //         Transform::from_scale(Vec3::splat(2.)),
-    //     )
-    // );
 
     let texture = asset_server.load("player_idle.png");
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
@@ -174,6 +182,34 @@ fn setup(
     ));
 }
 
+fn wind_collision(
+    mut bubble_query: Query<&mut Transform, With<Bubble>>, mut wind_query: Query<&mut Transform, With<Wind>>
+)
+{
+    for mut bubble in bubble_query.iter_mut()
+    {
+        let bubble_center = bubble.translation.truncate();
+        let bubble_aabb = Aabb2d::new(bubble_center, Vec2::splat(16.));
+
+        for mut wind in wind_query.iter_mut()
+        {
+            let wind_center = wind.translation.truncate();
+            let wind_aabb = Aabb2d::new(wind_center, Vec2::splat(16.));
+
+            let x_overlaps = bubble_aabb.min.x < wind_aabb.max.x && bubble_aabb.max.x > wind_aabb.min.x;
+            let y_overlaps = bubble_aabb.min.y < wind_aabb.max.y && bubble_aabb.max.y > wind_aabb.min.y;
+
+            if x_overlaps && y_overlaps 
+            {
+
+            }
+        }
+
+    }
+
+    //if colliding with wind
+}
+
 fn spawn_level(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -183,6 +219,7 @@ fn spawn_level(
     for (i, row) in level.iter().enumerate() {
         for (j, elem) in row.iter().enumerate() {
             match elem {
+                //Bubble Objects
                 1 => {
                     let texture = asset_server.load("bubble-idle-32x32.png");
                     let layout =
@@ -207,6 +244,7 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
+                //Low-Up-Wind
                 2 => {
                     let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
@@ -214,6 +252,35 @@ fn spawn_level(
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     let animation_indices = AnimationIndices { first: 0, last: 2 };
                     commands.spawn((
+                        Wind{
+                            direction: Direction::Up
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Spike Objects
+                3 =>{
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Spike,
                         Sprite::from_atlas_image(
                             texture,
                             TextureAtlas {
@@ -244,7 +311,7 @@ fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>
     velocity.y -= player.gravity * time.delta_secs();
 }
 
-fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>) {
+fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>, mut spikes_query: Query<&mut Transform, With<Spike>>) {
     let (mut phys_translation, player) = player_query.into_inner();
 
     if phys_translation.x > WIDTH * 2.
@@ -255,6 +322,26 @@ fn death_respawn(player_query: Single<(&mut PhysicalTranslation, &Player)>) {
         phys_translation.x = player.spawn_x;
         phys_translation.y = player.spawn_y;
     }
+
+    for mut spikes in spikes_query.iter_mut()
+        {
+            let player_center = phys_translation.truncate();
+            let player_aabb = Aabb2d::new(player_center, Vec2::splat(16.));
+
+            let spikes_center = spikes.translation.truncate();
+            let spikes_aabb = Aabb2d::new(spikes_center, Vec2::splat(16.));
+
+            let x_overlaps = player_aabb.min.x < spikes_aabb.max.x && player_aabb.max.x > spikes_aabb.min.x;
+            let y_overlaps = player_aabb.min.y < spikes_aabb.max.y && player_aabb.max.y > spikes_aabb.min.y;
+
+            if x_overlaps && y_overlaps 
+            {
+                phys_translation.x = player.spawn_x;
+                phys_translation.y = player.spawn_y;
+            }
+        }
+
+
 }
 
 fn coyote_time(_time: Res<Time>, player_query: Single<&mut Player>) {
