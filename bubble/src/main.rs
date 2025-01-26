@@ -472,7 +472,7 @@ fn spawn_level(
                         Transform::from_xyz(
                             BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
                             -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
-                            2.,
+                            5.,
                         ),
                         Collider,
                         Bubble,
@@ -1357,7 +1357,7 @@ fn handle_input(
             Transform::from_xyz(
                 f32::round(center.x / 32.) * 32.,
                 f32::round(center.y / 32.) * 32.,
-                2.,
+                5.,
             ),
             Collider,
             Bubble,
