@@ -31,12 +31,12 @@ const LEVEL_1: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 9, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 9, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 39, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
 const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
@@ -80,7 +80,7 @@ fn main() {
         .insert_resource(LevelIndex(1))
         .init_state::<GameState>()
         .enable_state_scoped_entities::<GameState>()
-        .add_systems(Startup, setup)
+        .add_systems(Startup, (setup, scale_screen).chain())
         .add_systems(OnEnter(GameState::Playing), spawn_level)
         .add_systems(
             FixedUpdate,
@@ -88,6 +88,7 @@ fn main() {
                 apply_gravity,
                 advance_physics,
                 check_for_collisions,
+                check_for_exit,
                 oob_check,
                 coyote_time,
                 scale_screen,
@@ -149,6 +150,9 @@ struct Player {
 
 #[derive(Component)]
 struct Bubble;
+
+#[derive(Component)]
+struct Exit;
 
 #[derive(Component)]
 struct Spike;
@@ -252,7 +256,6 @@ fn spawn_level(
                 //0 is empty
                 //Player
                 1 => {
-                    //Player
                     let texture = asset_server.load("playerRemake-Sheet.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 4, None, None);
@@ -1125,6 +1128,33 @@ fn check_for_collisions(
                 SPRING_GREEN,
             );
             break;
+        }
+    }
+}
+
+fn check_for_exit(
+    mut gizmos: Gizmos,
+    player_query: Single<&PhysicalTranslation, With<Player>>,
+    exit_query: Query<&Transform, With<Exit>>,
+    mut ev_nextlevel: EventWriter<NextLevelEvent>,
+) {
+    let physical_translation = player_query.into_inner();
+
+    let center = physical_translation.truncate();
+    let aabb = Aabb2d::new(center, Vec2::splat(16.));
+    gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
+
+    // player.is_grounded = false;
+    for exit in exit_query.iter() {
+        let exit_center = exit.translation.truncate();
+        let exit_aabb = Aabb2d::new(exit_center, Vec2::splat(16.));
+
+        let x_overlaps = aabb.min.x < exit_aabb.max.x && aabb.max.x > exit_aabb.min.x;
+        let y_overlaps = aabb.min.y < exit_aabb.max.y && aabb.max.y > exit_aabb.min.y;
+
+        // if intersects, move back by larger axis
+        if x_overlaps && y_overlaps {
+            ev_nextlevel.send(NextLevelEvent(1));
         }
     }
 }
