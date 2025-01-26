@@ -2,8 +2,22 @@ use std::time::Duration;
 
 use bevy::{color::palettes::css::*, math::bounding::*, prelude::*, window::WindowResolution};
 
+const TEST_LEVEL: [[i32; 10]; 10] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 2, 0, 0],
+    [1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1, 1, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 1, 1, 0, 1, 1, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
+
 const WIDTH: f32 = 1920.;
 const HEIGHT: f32 = 1080.;
+const BSIZE: u32 = 32;
 
 fn main() {
     App::new()
@@ -19,7 +33,7 @@ fn main() {
                     ..default()
                 }),
         )
-        .add_systems(Startup, setup)
+        .add_systems(Startup, (setup, spawn_level))
         .add_systems(
             FixedUpdate,
             (
@@ -39,6 +53,7 @@ fn main() {
                 interpolate_rendered_transform.in_set(RunFixedMainLoopSystem::AfterFixedMainLoop),
             ),
         )
+        .add_systems(Update, animate_sprite)
         .run();
 }
 
@@ -91,6 +106,15 @@ struct Fan {
     distance: f32,
 }
 
+#[derive(Component)]
+struct AnimationIndices {
+    first: usize,
+    last: usize,
+}
+
+#[derive(Component, Deref, DerefMut)]
+struct AnimationTimer(Timer);
+
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2d);
 
@@ -107,46 +131,60 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Transform::from_xyz(0., 0., 2.),
         AccumulatedInput::default(),
         Velocity::default(),
-        PhysicalTranslation(Vec3::new(0., 50., 2.)),
+        PhysicalTranslation(Vec3::new(0., 64., 2.)),
         PreviousPhysicalTranslation::default(),
         Player {
             coyote_timer: Timer::new(Duration::from_secs_f32(2.), TimerMode::Repeating),
             spawn_x: 0.,
-            spawn_y: 50.,
+            spawn_y: 64.,
             is_grabbing: false,
             is_grounded: false,
             can_jump: false,
             jump_force: 210., //jump force? peak peak
-            h_speed: 200.,
+            h_speed: 100.,
             gravity: 600.,
         },
         Collider,
     ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(0., 0., 2.),
-        Collider,
-    ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(32., 0., 2.),
-        Collider,
-    ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(-32., 0., 2.),
-        Collider,
-    ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(32., 32., 2.),
-        Collider,
-    ));
-    commands.spawn((
-        Sprite::from_image(asset_server.load("bubble.png")),
-        Transform::from_xyz(-32., 32., 2.),
-        Collider,
-    ));
+}
+
+fn spawn_level(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+) {
+    let level = TEST_LEVEL;
+    for (i, row) in level.iter().enumerate() {
+        for (j, elem) in row.iter().enumerate() {
+            let texture = asset_server.load("bubble-idle-32x32.png");
+            let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+            let texture_atlas_layout = texture_atlas_layouts.add(layout);
+            let animation_indices = AnimationIndices { first: 0, last: 2 };
+            match elem {
+                1 => {
+                    commands.spawn((
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        Collider,
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                2 => {}
+                _ => (),
+            }
+        }
+    }
 }
 
 fn apply_gravity(player_query: Single<(&mut Velocity, &Player)>, time: Res<Time>) {
@@ -187,9 +225,9 @@ fn handle_input(
     player_query: Single<(&mut AccumulatedInput, &mut Velocity, &mut Player)>,
 ) {
     let (mut input, mut velocity, mut player) = player_query.into_inner();
-    if keyboard_input.pressed(KeyCode::KeyW) {
-        input.y += 1.0;
-    }
+    // if keyboard_input.pressed(KeyCode::KeyW) {
+    //     input.y += 1.0;
+    // }
     if keyboard_input.pressed(KeyCode::KeyA) {
         input.x -= 1.0;
     }
@@ -381,9 +419,31 @@ fn check_for_collisions(
                 velocity.x = 0.;
                 physical_translation.x -= displacement;
             }
-            gizmos.rect_2d(collider_center, collider_aabb.half_size() * 2., YELLOW);
+            gizmos.rect_2d(
+                collider_center,
+                collider_aabb.half_size() * 2.,
+                SPRING_GREEN,
+            );
             break;
         }
     }
-    // println!("2 {:?} {:?}", player.is_grounded, velocity);
+}
+
+fn animate_sprite(
+    time: Res<Time>,
+    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
+) {
+    for (indices, mut timer, mut sprite) in &mut query {
+        timer.tick(time.delta());
+
+        if timer.just_finished() {
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = if atlas.index == indices.last {
+                    indices.first
+                } else {
+                    atlas.index + 1
+                };
+            }
+        }
+    }
 }
