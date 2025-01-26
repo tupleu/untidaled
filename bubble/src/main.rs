@@ -325,6 +325,325 @@ fn spawn_level(
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
                 }
+                //Mid-Up-Wind
+                4 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Up,
+                            force: MID_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Hi-Up-Wind
+                5 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Up,
+                            force: HI_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Low-Down-Wind
+                6 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Down,
+                            force: LOW_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Mid-Down-Wind
+                7 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Down,
+                            force: MID_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Hi-Down-Wind
+                8 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Down,
+                            force: HI_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Low-Right-Wind
+                9 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Right,
+                            force: LOW_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Mid-Right-Wind
+                10 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Right,
+                            force: MID_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Hi-Right-Wind
+                11 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Right,
+                            force: HI_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Low-Left-Wind
+                12 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Left,
+                            force: LOW_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Mid-Left-Wind
+                13 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Left,
+                            force: MID_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
+                //Hi-Left-Wind
+                14 => {
+                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    let animation_indices = AnimationIndices { first: 0, last: 2 };
+                    commands.spawn((
+                        Wind{
+                            direction: Direction::Left,
+                            force: HI_WIND,
+                        },
+
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: animation_indices.first,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 160.,
+                            -(BSIZE as f32 * i as f32 - 160.),
+                            2.,
+                        ),
+                        animation_indices,
+                        AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
+                    ));
+                }
                 _ => (),
             }
         }
