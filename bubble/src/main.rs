@@ -81,6 +81,7 @@ struct Player {
     is_grabbing: bool,
     is_grounded: bool,
     is_left: bool,
+    is_moving: bool,
     can_jump: bool,
     h_speed: f32,
     jump_force: f32,
@@ -131,10 +132,10 @@ fn setup(
     //     )
     // );
 
-    let texture = asset_server.load("player_idle.png");
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
+    let texture = asset_server.load("player_idlemove.png");
+    let layout = TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 2, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let animation_indices = AnimationIndices { first: 0, last: 2 };
+    let animation_indices: AnimationIndices = AnimationIndices { first: 0, last: 2 };
     commands.spawn((
         Sprite::from_atlas_image(
             texture,
@@ -158,6 +159,7 @@ fn setup(
             is_grabbing: false,
             is_grounded: false,
             is_left: true,
+            is_moving: false,
             can_jump: false,
             jump_force: 210., //jump force? peak peak
             h_speed: 100.,
@@ -196,6 +198,7 @@ fn spawn_level(
                             2.,
                         ),
                         Collider,
+                        Bubble,
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                     ));
@@ -264,6 +267,7 @@ fn coyote_time(_time: Res<Time>, player_query: Single<&mut Player>) {
 
 fn handle_input(
     mut gizmos: Gizmos,
+    mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     player_query: Single<(
         &mut AccumulatedInput,
@@ -271,6 +275,7 @@ fn handle_input(
         &mut Velocity,
         &mut Player,
     )>,
+    bubble_query: Query<(&Transform, Entity), With<Bubble>>,
 ) {
     let (mut input, position, mut velocity, mut player) = player_query.into_inner();
     if keyboard_input.pressed(KeyCode::KeyA) {
@@ -289,6 +294,18 @@ fn handle_input(
         );
         let aabb = Aabb2d::new(center, Vec2::splat(16.));
         gizmos.rect_2d(center, aabb.half_size() * 2., RED);
+        for (bubble_transformation, bubble) in bubble_query.iter() {
+            let bubble_center = bubble_transformation.translation.truncate();
+            let bubble_aabb = Aabb2d::new(bubble_center, Vec2::splat(16.));
+
+            let x_overlaps = aabb.min.x < bubble_aabb.max.x && aabb.max.x > bubble_aabb.min.x;
+            let y_overlaps = aabb.min.y < bubble_aabb.max.y && aabb.max.y > bubble_aabb.min.y;
+
+            // if intersects, move back by larger axis
+            if x_overlaps && y_overlaps && center.distance(bubble_center) < 16. {
+                commands.entity(bubble).despawn();
+            }
+        }
     }
     if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
         velocity.y = player.jump_force;
@@ -301,29 +318,52 @@ fn handle_input(
 
 fn advance_physics(
     fixed_time: Res<Time<Fixed>>,
-    mut query: Query<(
+    player_query: Single<(
         &mut PhysicalTranslation,
         &mut PreviousPhysicalTranslation,
         &mut AccumulatedInput,
+        &mut AnimationIndices,
+        &mut Sprite,
         &Velocity,
-        &Player,
+        &mut Player,
     )>,
 ) {
-    for (
+    let (
         mut current_physical_translation,
         mut previous_physical_translation,
         mut input,
+        mut indices,
+        mut sprite,
         velocity,
-        player,
-    ) in query.iter_mut()
-    {
-        previous_physical_translation.0 = current_physical_translation.0;
-        current_physical_translation.0 +=
-            (velocity.0 + input.extend(0.) * player.h_speed) * fixed_time.delta_secs();
+        mut player,
+    ) = player_query.into_inner();
 
-        // Reset the input accumulator, as we are currently consuming all input that happened since the last fixed timestep.
-        input.0 = Vec2::ZERO;
+    previous_physical_translation.0 = current_physical_translation.0;
+    current_physical_translation.0 +=
+        (velocity.0 + input.extend(0.) * player.h_speed) * fixed_time.delta_secs();
+
+    if input.x != 0. {
+        if !player.is_moving {
+            player.is_moving = true;
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = 3;
+            }
+        }
+        indices.first = 3;
+        indices.last = 5;
+    } else {
+        if player.is_moving {
+            player.is_moving = false;
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = 0;
+            }
+        }
+        indices.first = 0;
+        indices.last = 2;
     }
+
+    // Reset the input accumulator, as we are currently consuming all input that happened since the last fixed timestep.
+    input.0 = Vec2::ZERO;
 }
 
 fn check_for_collisions(
@@ -466,7 +506,7 @@ fn animate_sprite(
 
         if timer.just_finished() {
             if let Some(atlas) = &mut sprite.texture_atlas {
-                atlas.index = if atlas.index == indices.last {
+                atlas.index = if atlas.index >= indices.last {
                     indices.first
                 } else {
                     atlas.index + 1
