@@ -420,6 +420,7 @@ fn handle_input(
         let texture_atlas_layout = texture_atlas_layouts.add(layout);
         let animation_indices = AnimationIndices { first: 0, last: 2 };
         commands.spawn((
+            StateScoped(GameState::Playing),
             Sprite::from_atlas_image(
                 texture,
                 TextureAtlas {
