@@ -363,7 +363,7 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: "Untidaled".to_string(),
-                        resolution: WindowResolution::new(WIDTH, HEIGHT),
+                        // resolution: WindowResolution::new(WIDTH, HEIGHT),
                         ..default()
                     }),
                     ..default()
@@ -541,8 +541,8 @@ fn spawn_level(
                 Text2d::new("A/D to move\nspace to jump\nshift to interact"),
                 TextLayout::new_with_justify(JustifyText::Center),
                 Transform::from_translation(Vec3::new(
-                    BSIZE as f32 * 4. - 16. * LEVEL_WIDTH as f32,
-                    -(BSIZE as f32 * 2. - 16. * LEVEL_HEIGHT as f32),
+                    BSIZE as f32 * 4. - 16. * LEVEL_WIDTH as f32 + 16.,
+                    -(BSIZE as f32 * 2. - 16. * LEVEL_HEIGHT as f32 + 16.),
                     10.,
                 )),
             ));
@@ -553,8 +553,8 @@ fn spawn_level(
                 Text2d::new("esc to respawn"),
                 TextLayout::new_with_justify(JustifyText::Center),
                 Transform::from_translation(Vec3::new(
-                    BSIZE as f32 * 4. - 16. * LEVEL_WIDTH as f32,
-                    -(BSIZE as f32 * 2. - 16. * LEVEL_HEIGHT as f32),
+                    BSIZE as f32 * 4. - 16. * LEVEL_WIDTH as f32 + 16.,
+                    -(BSIZE as f32 * 2. - 16. * LEVEL_HEIGHT as f32 + 16.),
                     10.,
                 )),
             ));
@@ -565,8 +565,8 @@ fn spawn_level(
                 Text2d::new("this a bonus\nextra difficult level"),
                 TextLayout::new_with_justify(JustifyText::Center),
                 Transform::from_translation(Vec3::new(
-                    BSIZE as f32 * 5. - 16. * LEVEL_WIDTH as f32,
-                    -(BSIZE as f32 * 1.5 - 16. * LEVEL_HEIGHT as f32),
+                    BSIZE as f32 * 5. - 16. * LEVEL_WIDTH as f32 + 16.,
+                    -(BSIZE as f32 * 1.5 - 16. * LEVEL_HEIGHT as f32 + 16.),
                     10.,
                 )),
             ));
@@ -579,8 +579,8 @@ fn spawn_level(
                 ),
                 TextLayout::new_with_justify(JustifyText::Center),
                 Transform::from_translation(Vec3::new(
-                    BSIZE as f32 * 8. - 16. * LEVEL_WIDTH as f32,
-                    -(BSIZE as f32 * 1.5 - 16. * LEVEL_HEIGHT as f32),
+                    BSIZE as f32 * 8. - 16. * LEVEL_WIDTH as f32 + 16.,
+                    -(BSIZE as f32 * 1.5 - 16. * LEVEL_HEIGHT as f32 + 16.),
                     10.,
                 )),
             ));
@@ -618,16 +618,16 @@ fn spawn_level(
                         animation_indices,
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             10.,
                         ),
                         Name::new("Player"),
                         AccumulatedInput::default(),
                         Velocity::default(),
                         PhysicalTranslation(Vec3::new(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             10.,
                         )),
                         PreviousPhysicalTranslation::default(),
@@ -665,8 +665,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             5.,
                         ),
                         Collider,
@@ -691,8 +691,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         AnimationTimer(Timer::from_seconds(0.125, TimerMode::Repeating)),
@@ -718,8 +718,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         animation_indices,
@@ -746,8 +746,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         animation_indices,
@@ -774,8 +774,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         animation_indices,
@@ -803,8 +803,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(180f32.to_radians()),
@@ -835,8 +835,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(180f32.to_radians()),
@@ -867,8 +867,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(180f32.to_radians()),
@@ -899,8 +899,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(90f32.to_radians()),
@@ -931,8 +931,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(90f32.to_radians()),
@@ -963,8 +963,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(90f32.to_radians()),
@@ -995,8 +995,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(-90f32.to_radians()),
@@ -1027,8 +1027,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(-90f32.to_radians()),
@@ -1059,8 +1059,8 @@ fn spawn_level(
                         ),
                         Transform {
                             translation: Vec3::new(
-                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                                BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                                -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                                 2.,
                             ),
                             rotation: Quat::from_rotation_z(-90f32.to_radians()),
@@ -1085,8 +1085,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1106,8 +1106,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1127,8 +1127,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1148,8 +1148,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1169,8 +1169,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1190,8 +1190,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1211,8 +1211,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1232,8 +1232,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1253,8 +1253,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         Collider,
@@ -1275,8 +1275,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                     ));
@@ -1296,8 +1296,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         NoBubble,
@@ -1318,8 +1318,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         NoBubble,
@@ -1340,8 +1340,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         NoBubble,
@@ -1362,8 +1362,8 @@ fn spawn_level(
                             },
                         ),
                         Transform::from_xyz(
-                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
-                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32 + 16.,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32 + 16.),
                             2.,
                         ),
                         animation_indices,
@@ -1515,8 +1515,8 @@ fn handle_input(
             return;
         }
         let center = Vec2::new(
-            f32::round(center.x / 32.) * 32.,
-            f32::round(center.y / 32.) * 32.,
+            f32::round((center.x + 16.) / 32.) * 32. - 16.,
+            f32::round((center.y + 16.) / 32.) * 32. - 16.,
         );
         let aabb = Aabb2d::new(center, Vec2::splat(16.));
         // check if bubble would collide
@@ -1526,6 +1526,8 @@ fn handle_input(
 
             let x_overlaps = aabb.min.x < collider_aabb.max.x && aabb.max.x > collider_aabb.min.x;
             let y_overlaps = aabb.min.y < collider_aabb.max.y && aabb.max.y > collider_aabb.min.y;
+
+            println!("{:?} {:?}", aabb, collider_aabb);
 
             // if intersects, move back by larger axis
             if x_overlaps && y_overlaps {
@@ -1548,11 +1550,7 @@ fn handle_input(
                     index: animation_indices.first,
                 },
             ),
-            Transform::from_xyz(
-                f32::round(center.x / 32.) * 32.,
-                f32::round(center.y / 32.) * 32.,
-                5.,
-            ),
+            Transform::from_xyz(center.x, center.y, 5.),
             Collider,
             Bubble,
             animation_indices,
