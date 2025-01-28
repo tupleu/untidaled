@@ -643,7 +643,7 @@ fn spawn_level(
                             bubbled: false,
                             can_jump: false,
                             jump_force: 210., //jump force? peak peak
-                            h_speed: 200.,
+                            h_speed: 165.,
                             gravity: 600.,
                         },
                         Collider,
