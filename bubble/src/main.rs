@@ -201,10 +201,10 @@ const LEVEL_5: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 12, 00, 32, 12, 00, 00, 00, 00, 34, 36, 00, 00, 12, 00, 00, 34,
     ],
     [
-        36, 12, 11, 00, 00, 00, 35, 00, 31, 32, 32, 32, 35, 36, 00, 31, 32, 32, 32, 35,
+        36, 12, 11, 00, 42, 00, 35, 00, 31, 32, 32, 32, 35, 36, 00, 31, 32, 32, 32, 35,
     ],
     [
-        36, 42, 42, 42, 42, 00, 35, 00, 34, 35, 35, 35, 35, 36, 00, 12, 00, 00, 99, 34,
+        36, 42, 42, 42, 43, 00, 35, 00, 34, 35, 35, 35, 35, 36, 00, 12, 00, 00, 99, 34,
     ],
     [
         35, 32, 32, 32, 32, 32, 35, 32, 35, 35, 35, 35, 35, 35, 32, 32, 32, 32, 32, 35,
@@ -303,7 +303,7 @@ const LEVEL_8: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 42, 42, 42, 42, 12, 15, 00, 14, 12, 42, 15, 14, 15, 00, 34,
     ],
     [
-        36, 11, 00, 42, 42, 42, 42, 42, 42, 14, 14, 00, 42, 14, 14, 40, 00, 40, 00, 34,
+        36, 11, 00, 42, 42, 43, 43, 43, 43, 14, 14, 00, 42, 14, 14, 40, 00, 40, 00, 34,
     ],
     [
         35, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 35,
@@ -343,7 +343,7 @@ const LEVEL_0: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
 ];
 
 const LEVEL_LIST: [[[i32; LEVEL_WIDTH]; LEVEL_HEIGHT]; 9] = [
-    TEST_LEVEL, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8,
+    LEVEL_8, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_0,
 ];
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
@@ -369,7 +369,7 @@ fn main() {
                     ..default()
                 }),
         )
-        .insert_resource(LevelIndex(8))
+        .insert_resource(LevelIndex(1))
         .init_state::<GameState>()
         .enable_state_scoped_entities::<GameState>()
         .add_systems(Startup, (setup, scale_screen).chain())
@@ -560,14 +560,28 @@ fn spawn_level(
                 )),
             ));
         }
-        8 => {
+        0 => {
             commands.spawn((
                 StateScoped(GameState::Playing),
-                Text2d::new("this a bonus\nextra difficult level\n(yes it is possible)"),
+                Text2d::new("this a bonus\nextra difficult level"),
                 TextLayout::new_with_justify(JustifyText::Center),
                 Transform::from_translation(Vec3::new(
                     BSIZE as f32 * 5. - 16. * LEVEL_WIDTH as f32,
-                    -(BSIZE as f32 * 2. - 16. * LEVEL_HEIGHT as f32),
+                    -(BSIZE as f32 * 1.5 - 16. * LEVEL_HEIGHT as f32),
+                    10.,
+                )),
+            ));
+        }
+        8 => {
+            commands.spawn((
+                StateScoped(GameState::Playing),
+                Text2d::new(
+                    "congratulations on finishing\npress the + and - keys to change levels",
+                ),
+                TextLayout::new_with_justify(JustifyText::Center),
+                Transform::from_translation(Vec3::new(
+                    BSIZE as f32 * 8. - 16. * LEVEL_WIDTH as f32,
+                    -(BSIZE as f32 * 1.5 - 16. * LEVEL_HEIGHT as f32),
                     10.,
                 )),
             ));
@@ -1311,9 +1325,9 @@ fn spawn_level(
                 }
                 // tree
                 42 => {
-                    let texture = asset_server.load("volcanobuttoncoral.png");
+                    let texture = asset_server.load("coralSpriteTall.png");
                     let layout =
-                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 5, 1, None, None);
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 1, 2, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
@@ -1321,7 +1335,30 @@ fn spawn_level(
                             texture,
                             TextureAtlas {
                                 layout: texture_atlas_layout,
-                                index: 4,
+                                index: 0,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            BSIZE as f32 * j as f32 - 16. * LEVEL_WIDTH as f32,
+                            -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
+                            2.,
+                        ),
+                        NoBubble,
+                    ));
+                }
+                // tree bottom
+                43 => {
+                    let texture = asset_server.load("coralSpriteTall.png");
+                    let layout =
+                        TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 1, 2, None, None);
+                    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+                    commands.spawn((
+                        StateScoped(GameState::Playing),
+                        Sprite::from_atlas_image(
+                            texture,
+                            TextureAtlas {
+                                layout: texture_atlas_layout,
+                                index: 1,
                             },
                         ),
                         Transform::from_xyz(
@@ -1398,7 +1435,7 @@ fn death_respawn(
     let phys_translation = player_query.into_inner();
 
     let player_center = phys_translation.truncate();
-    let player_aabb = Aabb2d::new(player_center, Vec2::new(10., 16.));
+    let player_aabb = Aabb2d::new(player_center, Vec2::new(8., 12.));
     for spikes in spikes_query.iter_mut() {
         let spikes_center = spikes.translation.truncate();
         let spikes_aabb = Aabb2d::new(spikes_center, Vec2::splat(10.));
