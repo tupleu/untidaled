@@ -587,13 +587,20 @@ fn spawn_level(
         }
         _ => (),
     }
+    let player_texture = asset_server.load("playerRemake-Sheet.png");
+    let bubble_texture = asset_server.load("bubble-idle-32x32.png");
+    let spike_texture = asset_server.load("spikes.png");
+    let wind_texture = asset_server.load("windSquare-Sheet-32x32.png");
+    let platform_texture = asset_server.load("platform.aesprite.png");
+    let misc_texture = asset_server.load("volcanobuttoncoral.png");
+    let tree_texture = asset_server.load("coralSpriteTall.png");
+    let rust_texture = asset_server.load("rustacean.png");
     for (i, row) in level.iter().enumerate() {
         for (j, elem) in row.iter().enumerate() {
             match elem {
                 //0 is empty
                 //Player
                 11 => {
-                    let texture = asset_server.load("playerRemake-Sheet.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 4, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -602,7 +609,7 @@ fn spawn_level(
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            player_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -636,7 +643,7 @@ fn spawn_level(
                             bubbled: false,
                             can_jump: false,
                             jump_force: 210., //jump force? peak peak
-                            h_speed: 100.,
+                            h_speed: 200.,
                             gravity: 600.,
                         },
                         Collider,
@@ -644,7 +651,6 @@ fn spawn_level(
                 }
                 //Bubble Objects
                 12 => {
-                    let texture = asset_server.load("bubble-idle-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -652,7 +658,7 @@ fn spawn_level(
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            bubble_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -671,7 +677,6 @@ fn spawn_level(
                 }
                 //Spike Objects
                 14 => {
-                    let texture = asset_server.load("spikes.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 1, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -679,7 +684,7 @@ fn spawn_level(
                         StateScoped(GameState::Playing),
                         Spike,
                         Sprite::from_atlas_image(
-                            texture,
+                            spike_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 0,
@@ -695,7 +700,6 @@ fn spawn_level(
                 }
                 //Low-Up-Wind
                 15 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -707,7 +711,7 @@ fn spawn_level(
                             force: LOW_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -724,7 +728,6 @@ fn spawn_level(
                 }
                 //Mid-Up-Wind
                 16 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -736,7 +739,7 @@ fn spawn_level(
                             force: MID_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -753,7 +756,6 @@ fn spawn_level(
                 }
                 //Hi-Up-Wind
                 17 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -765,7 +767,7 @@ fn spawn_level(
                             force: HI_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -782,7 +784,6 @@ fn spawn_level(
                 }
                 //Low-Down-Wind
                 18 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -794,7 +795,7 @@ fn spawn_level(
                             force: LOW_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -815,7 +816,6 @@ fn spawn_level(
                 }
                 //Mid-Down-Wind
                 19 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -827,7 +827,7 @@ fn spawn_level(
                             force: MID_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -848,7 +848,6 @@ fn spawn_level(
                 }
                 //Hi-Down-Wind
                 20 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -860,7 +859,7 @@ fn spawn_level(
                             force: HI_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -881,7 +880,6 @@ fn spawn_level(
                 }
                 //Low-Right-Wind
                 21 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -893,7 +891,7 @@ fn spawn_level(
                             force: LOW_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -914,7 +912,6 @@ fn spawn_level(
                 }
                 //Mid-Right-Wind
                 22 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -926,7 +923,7 @@ fn spawn_level(
                             force: MID_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -947,7 +944,6 @@ fn spawn_level(
                 }
                 //Hi-Right-Wind
                 23 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -959,7 +955,7 @@ fn spawn_level(
                             force: HI_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -980,7 +976,6 @@ fn spawn_level(
                 }
                 //Low-Left-Wind
                 24 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -992,7 +987,7 @@ fn spawn_level(
                             force: LOW_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -1013,7 +1008,6 @@ fn spawn_level(
                 }
                 //Mid-Left-Wind
                 25 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -1025,7 +1019,7 @@ fn spawn_level(
                             force: MID_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -1046,7 +1040,6 @@ fn spawn_level(
                 }
                 //Hi-Left-Wind
                 26 => {
-                    let texture = asset_server.load("windSquare-Sheet-32x32.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -1058,7 +1051,7 @@ fn spawn_level(
                             force: HI_WIND,
                         },
                         Sprite::from_atlas_image(
-                            texture,
+                            wind_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -1079,14 +1072,13 @@ fn spawn_level(
                 }
                 // platform
                 31 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 0,
@@ -1101,14 +1093,13 @@ fn spawn_level(
                     ));
                 }
                 32 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 1,
@@ -1123,14 +1114,13 @@ fn spawn_level(
                     ));
                 }
                 33 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 2,
@@ -1145,14 +1135,13 @@ fn spawn_level(
                     ));
                 }
                 34 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 3,
@@ -1167,14 +1156,13 @@ fn spawn_level(
                     ));
                 }
                 35 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 4,
@@ -1189,14 +1177,13 @@ fn spawn_level(
                     ));
                 }
                 36 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 5,
@@ -1211,14 +1198,13 @@ fn spawn_level(
                     ));
                 }
                 37 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 6,
@@ -1233,14 +1219,13 @@ fn spawn_level(
                     ));
                 }
                 38 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 7,
@@ -1255,14 +1240,13 @@ fn spawn_level(
                     ));
                 }
                 39 => {
-                    let texture = asset_server.load("platform.aesprite.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 3, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            platform_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 8,
@@ -1278,14 +1262,13 @@ fn spawn_level(
                 }
                 // volcano
                 40 => {
-                    let texture = asset_server.load("volcanobuttoncoral.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 5, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            misc_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 0,
@@ -1300,14 +1283,13 @@ fn spawn_level(
                 }
                 // coral
                 41 => {
-                    let texture = asset_server.load("volcanobuttoncoral.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 5, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            misc_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 3,
@@ -1323,14 +1305,13 @@ fn spawn_level(
                 }
                 // tree
                 42 => {
-                    let texture = asset_server.load("coralSpriteTall.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 1, 2, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            tree_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 0,
@@ -1346,14 +1327,13 @@ fn spawn_level(
                 }
                 // tree bottom
                 43 => {
-                    let texture = asset_server.load("coralSpriteTall.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 1, 2, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            tree_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: 1,
@@ -1368,7 +1348,6 @@ fn spawn_level(
                     ));
                 }
                 99 => {
-                    let texture = asset_server.load("rustacean.png");
                     let layout =
                         TextureAtlasLayout::from_grid(UVec2::splat(BSIZE), 3, 1, None, None);
                     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -1376,7 +1355,7 @@ fn spawn_level(
                     commands.spawn((
                         StateScoped(GameState::Playing),
                         Sprite::from_atlas_image(
-                            texture,
+                            rust_texture.clone(),
                             TextureAtlas {
                                 layout: texture_atlas_layout,
                                 index: animation_indices.first,
@@ -1605,8 +1584,9 @@ fn advance_physics(
     ) = player_query.into_inner();
 
     previous_physical_translation.0 = current_physical_translation.0;
-    current_physical_translation.0 +=
-        (velocity.0 + input.extend(0.) * player.h_speed) * fixed_time.delta_secs();
+    current_physical_translation.0 += (velocity.0
+        + input.extend(0.).normalize_or_zero() * player.h_speed)
+        * fixed_time.delta_secs();
 
     if player.is_bubbling {
         if input.x != 0. {
