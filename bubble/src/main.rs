@@ -96,19 +96,19 @@ const LEVEL_2: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
-    ],
-    [
         36, 99, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        35, 32, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 12, 00, 34,
+        35, 32, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        35, 35, 36, 00, 11, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 42, 00, 34,
+        35, 35, 36, 15, 11, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 12, 00, 34,
     ],
     [
-        35, 35, 35, 32, 32, 32, 32, 33, 14, 14, 31, 33, 14, 14, 31, 32, 32, 32, 32, 35,
+        35, 35, 36, 40, 31, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 42, 00, 34,
+    ],
+    [
+        35, 35, 35, 35, 35, 35, 32, 32, 33, 14, 14, 31, 33, 14, 14, 31, 32, 32, 32, 35,
     ],
 ];
 
@@ -120,28 +120,28 @@ const LEVEL_3: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 35,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+        36, 00, 00, 00, 99, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+        36, 00, 12, 31, 32, 33, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+        36, 00, 15, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
+        35, 33, 40, 00, 00, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 00, 00, 00, 00, 34,
     ],
     [
-        35, 32, 32, 32, 32, 32, 32, 33, 00, 00, 00, 00, 00, 00, 00, 00, 31, 32, 32, 35,
+        35, 35, 32, 32, 32, 32, 32, 33, 00, 00, 00, 00, 00, 00, 00, 31, 33, 00, 00, 34,
     ],
     [
-        36, 11, 00, 00, 12, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 00, 00, 34,
+        36, 11, 00, 00, 12, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 00, 00, 00, 31, 35,
     ],
     [
-        35, 32, 32, 32, 32, 32, 32, 32, 32, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 34,
+        35, 32, 32, 32, 32, 32, 32, 32, 33, 14, 14, 14, 14, 14, 14, 14, 31, 32, 35, 35,
     ],
 ];
 
@@ -159,22 +159,22 @@ const LEVEL_4: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+        36, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
     ],
     [
-        36, 12, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32, 00, 00, 34,
+        35, 33, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 32, 32, 35,
     ],
     [
-        36, 42, 00, 00, 00, 00, 42, 00, 00, 00, 00, 00, 00, 00, 00, 00, 35, 00, 00, 34,
+        35, 36, 00, 00, 00, 00, 42, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34, 35, 35, 35,
     ],
     [
-        35, 33, 00, 00, 00, 31, 32, 33, 00, 00, 00, 00, 00, 00, 00, 00, 35, 00, 00, 34,
+        35, 36, 00, 00, 00, 31, 32, 33, 00, 00, 00, 00, 00, 00, 00, 00, 34, 35, 35, 35,
     ],
     [
-        35, 36, 11, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 35, 00, 99, 34,
+        35, 36, 11, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 34, 35, 35, 35,
     ],
     [
-        35, 35, 32, 32, 32, 32, 32, 32, 32, 33, 14, 14, 14, 14, 14, 14, 35, 32, 32, 35,
+        35, 35, 32, 32, 32, 32, 32, 32, 32, 33, 14, 14, 14, 14, 14, 14, 34, 35, 35, 35,
     ],
 ];
 
@@ -183,25 +183,58 @@ const LEVEL_5: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
         35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 35,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
-    ],
-    [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 32, 35,
-    ],
-    [
         36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 15, 00, 00, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 41, 00, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 15, 00, 00, 00, 00, 00, 00, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 32, 33, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 00, 31, 00, 15, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 41, 34, 35, 36, 00, 00, 34,
     ],
     [
-        36, 00, 00, 00, 00, 31, 35, 00, 15, 00, 12, 00, 00, 12, 00, 00, 00, 00, 00, 34,
+        36, 00, 00, 00, 00, 00, 00, 00, 31, 33, 00, 00, 31, 33, 37, 38, 39, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 12, 00, 32, 12, 00, 00, 00, 00, 34, 36, 00, 00, 12, 00, 00, 34,
+    ],
+    [
+        36, 12, 11, 00, 00, 00, 35, 00, 31, 32, 32, 32, 35, 36, 00, 31, 32, 32, 32, 35,
+    ],
+    [
+        36, 42, 42, 42, 42, 00, 35, 00, 34, 35, 35, 35, 35, 36, 00, 12, 00, 00, 99, 34,
+    ],
+    [
+        35, 32, 32, 32, 32, 32, 35, 32, 35, 35, 35, 35, 35, 35, 32, 32, 32, 32, 32, 35,
+    ],
+];
+
+const LEVEL_6: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
+    [
+        35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 35,
+    ],
+    [
+        36, 00, 14, 00, 00, 00, 00, 00, 00, 00, 14, 00, 00, 00, 00, 00, 00, 00, 99, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 14, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 31, 35,
+    ],
+    [
+        36, 14, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 14, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 14, 00, 00, 00, 00, 00, 00, 00, 14, 00, 00, 14, 00, 15, 14, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 15, 14, 00, 00, 14, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 31, 00, 15, 00, 00, 00, 14, 14, 00, 00, 15, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 31, 35, 00, 15, 00, 12, 00, 15, 12, 00, 00, 15, 00, 14, 34,
     ],
     [
         36, 11, 00, 00, 00, 12, 12, 00, 40, 00, 42, 00, 40, 42, 00, 00, 40, 00, 00, 34,
@@ -211,8 +244,107 @@ const LEVEL_5: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
     ],
 ];
 
-const LEVEL_LIST: [[[i32; LEVEL_WIDTH]; LEVEL_HEIGHT]; 6] =
-    [TEST_LEVEL, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5];
+const LEVEL_7: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
+    [
+        35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 35,
+    ],
+    [
+        36, 99, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 12, 34,
+    ],
+    [
+        36, 11, 00, 00, 00, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        35, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 35,
+    ],
+];
+
+const LEVEL_8: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
+    [
+        35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 35,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 00, 00, 34,
+    ],
+    [
+        36, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 11, 00, 00, 00, 00, 12, 00, 00, 00, 14, 00, 00, 00, 14, 00, 00, 15, 12, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 42, 42, 42, 42, 12, 15, 00, 14, 12, 42, 15, 14, 15, 00, 34,
+    ],
+    [
+        36, 00, 00, 42, 42, 42, 42, 42, 42, 14, 14, 00, 42, 14, 14, 40, 00, 40, 00, 34,
+    ],
+    [
+        35, 32, 32, 32, 32, 32, 35, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 35,
+    ],
+];
+const LEVEL_0: [[i32; LEVEL_WIDTH]; LEVEL_HEIGHT] = [
+    [
+        35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 35,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 34,
+    ],
+    [
+        36, 11, 00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 99, 34,
+    ],
+    [
+        35, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 35,
+    ],
+];
+
+const LEVEL_LIST: [[[i32; LEVEL_WIDTH]; LEVEL_HEIGHT]; 9] = [
+    TEST_LEVEL, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8,
+];
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
 enum GameState {
@@ -230,14 +362,14 @@ fn main() {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        title: "bubble".to_string(),
+                        title: "Untidaled".to_string(),
                         resolution: WindowResolution::new(WIDTH, HEIGHT),
                         ..default()
                     }),
                     ..default()
                 }),
         )
-        .insert_resource(LevelIndex(1))
+        .insert_resource(LevelIndex(8))
         .init_state::<GameState>()
         .enable_state_scoped_entities::<GameState>()
         .add_systems(Startup, (setup, scale_screen).chain())
@@ -248,6 +380,7 @@ fn main() {
                 apply_gravity,
                 advance_physics,
                 check_for_collisions,
+                ground_check,
                 check_for_exit,
                 oob_check,
                 coyote_time,
@@ -292,6 +425,9 @@ struct PreviousPhysicalTranslation(Vec3);
 #[derive(Component, Default)]
 struct Collider;
 
+#[derive(Component, Default)]
+struct NoBubble;
+
 #[derive(Component)]
 struct Player {
     coyote_timer: Timer,
@@ -300,6 +436,7 @@ struct Player {
     is_moving: bool,
     is_bubbling: bool,
     bubbled: bool,
+    jumped: bool,
     can_jump: bool,
     h_speed: f32,
     jump_force: f32,
@@ -398,6 +535,33 @@ fn spawn_level(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let level = LEVEL_LIST[level_index.0];
+    match level_index.0 {
+        1 => {
+            commands.spawn((
+                StateScoped(GameState::Playing),
+                Text2d::new("A/D to move\nspace to jump\nshift to interact"),
+                TextLayout::new_with_justify(JustifyText::Center),
+                Transform::from_translation(Vec3::new(
+                    BSIZE as f32 * 4. - 16. * LEVEL_WIDTH as f32,
+                    -(BSIZE as f32 * 2. - 16. * LEVEL_HEIGHT as f32),
+                    10.,
+                )),
+            ));
+        }
+        5 => {
+            commands.spawn((
+                StateScoped(GameState::Playing),
+                Text2d::new("esc to respawn"),
+                TextLayout::new_with_justify(JustifyText::Center),
+                Transform::from_translation(Vec3::new(
+                    BSIZE as f32 * 4. - 16. * LEVEL_WIDTH as f32,
+                    -(BSIZE as f32 * 2. - 16. * LEVEL_HEIGHT as f32),
+                    10.,
+                )),
+            ));
+        }
+        _ => (),
+    }
     for (i, row) in level.iter().enumerate() {
         for (j, elem) in row.iter().enumerate() {
             match elem {
@@ -437,7 +601,7 @@ fn spawn_level(
                         PreviousPhysicalTranslation::default(),
                         Player {
                             coyote_timer: Timer::new(
-                                Duration::from_secs_f32(0.001),
+                                Duration::from_secs_f32(0.2),
                                 TimerMode::Repeating,
                             ),
                             is_grounded: false,
@@ -445,6 +609,7 @@ fn spawn_level(
                             is_moving: false,
                             is_bubbling: false,
                             bubbled: false,
+                            jumped: false,
                             can_jump: false,
                             jump_force: 210., //jump force? peak peak
                             h_speed: 100.,
@@ -1129,6 +1294,7 @@ fn spawn_level(
                             -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                             2.,
                         ),
+                        NoBubble,
                     ));
                 }
                 // tree
@@ -1151,6 +1317,7 @@ fn spawn_level(
                             -(BSIZE as f32 * i as f32 - 16. * LEVEL_HEIGHT as f32),
                             2.,
                         ),
+                        NoBubble,
                     ));
                 }
                 99 => {
@@ -1218,12 +1385,11 @@ fn death_respawn(
 ) {
     let phys_translation = player_query.into_inner();
 
+    let player_center = phys_translation.truncate();
+    let player_aabb = Aabb2d::new(player_center, Vec2::new(10., 16.));
     for spikes in spikes_query.iter_mut() {
-        let player_center = phys_translation.truncate();
-        let player_aabb = Aabb2d::new(player_center, Vec2::splat(16.));
-
         let spikes_center = spikes.translation.truncate();
-        let spikes_aabb = Aabb2d::new(spikes_center, Vec2::splat(16.));
+        let spikes_aabb = Aabb2d::new(spikes_center, Vec2::splat(10.));
 
         let x_overlaps =
             player_aabb.min.x < spikes_aabb.max.x && player_aabb.max.x > spikes_aabb.min.x;
@@ -1262,7 +1428,7 @@ fn handle_input(
         &mut Player,
     )>,
     bubble_query: Query<(&Transform, Entity), With<Bubble>>,
-    collider_query: Query<&Transform, (With<Collider>, Without<Player>)>,
+    collider_query: Query<&Transform, (Or<(With<NoBubble>, With<Collider>)>, Without<Player>)>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
         ev_nextlevel.send(NextLevelEvent(0));
@@ -1289,12 +1455,12 @@ fn handle_input(
 
     if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
         velocity.y = player.jump_force;
-        player.is_grounded = false;
-        player.can_jump = false;
+        player.jumped = true;
+        // player.is_grounded = false;
+        // player.can_jump = false;
     } else {
-        input.y = 0.;
+        player.jumped = false;
     }
-
     if keyboard_input.just_pressed(KeyCode::ShiftLeft)
         | keyboard_input.just_pressed(KeyCode::ShiftRight)
     {
@@ -1340,7 +1506,6 @@ fn handle_input(
 
             // if intersects, move back by larger axis
             if x_overlaps && y_overlaps {
-                println!("{:?}", collider);
                 return;
             }
         }
@@ -1447,6 +1612,36 @@ fn advance_physics(
     input.0 = Vec2::ZERO;
 }
 
+fn ground_check(
+    player_query: Single<(&PhysicalTranslation, &mut Player)>,
+    collider_query: Query<&Transform, (With<Collider>, Without<Player>)>,
+) {
+    let (physical_translation, mut player) = player_query.into_inner();
+    player.is_grounded = false;
+    for collider in collider_query.iter() {
+        let center = physical_translation.truncate();
+        let aabb = Aabb2d::new(Vec2::new(center.x, center.y - 0.001), Vec2::new(12., 16.));
+
+        let collider_center = collider.translation.truncate();
+        let collider_aabb = Aabb2d::new(collider_center, Vec2::splat(16.));
+
+        let x_overlaps = aabb.min.x < collider_aabb.max.x && aabb.max.x > collider_aabb.min.x;
+        let y_overlaps = aabb.min.y < collider_aabb.max.y && aabb.max.y > collider_aabb.min.y;
+
+        if x_overlaps
+            && y_overlaps
+            && f32::abs(physical_translation.y - collider_center.y)
+                > f32::abs(physical_translation.x - collider_center.x)
+        {
+            player.is_grounded = true;
+            player.can_jump = true;
+        }
+    }
+    if player.jumped {
+        player.can_jump = false;
+    }
+}
+
 fn check_for_collisions(
     mut gizmos: Gizmos,
     player_query: Single<(
@@ -1461,10 +1656,10 @@ fn check_for_collisions(
         player_query.into_inner();
 
     let center = physical_translation.truncate();
-    let aabb = Aabb2d::new(center, Vec2::splat(16.));
-    // gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
+    let aabb = Aabb2d::new(center, Vec2::new(12., 16.));
 
-    // player.is_grounded = false;
+    // gizmos.rect_2d(center, Vec2::new(12., 16.) * 2., YELLOW);
+
     let mut check_once = true;
     'outer: for collider in collider_query.iter() {
         let collider_center = collider.translation.truncate();
@@ -1476,22 +1671,20 @@ fn check_for_collisions(
         // if intersects, move back by larger axis
         if x_overlaps && y_overlaps {
             let displacement;
-            let mut to_ground = player.is_grounded;
+            // let mut to_ground = player.is_grounded;
             let aabb2;
             // check which axis is larger first
             if f32::abs(previous_physical_translation.y - collider_center.y)
                 > f32::abs(previous_physical_translation.x - collider_center.x)
             {
                 displacement = if previous_physical_translation.y > collider_center.y {
-                    // player.is_grounded = true;
-                    // player.can_jump = true;
-                    to_ground = true;
+                    // to_ground = true;
                     aabb.min.y - collider_aabb.max.y
                 } else {
                     aabb.max.y - collider_aabb.min.y
                 };
                 let center2 = Vec2::new(center.x, center.y - displacement);
-                aabb2 = Aabb2d::new(center2, Vec2::splat(16.));
+                aabb2 = Aabb2d::new(center2, Vec2::new(12., 16.));
 
                 // check if displacement collides with other colliders
                 'inner: for collider2 in collider_query.iter() {
@@ -1520,8 +1713,8 @@ fn check_for_collisions(
                         break;
                     }
                 }
-                player.is_grounded = to_ground;
-                player.can_jump = to_ground;
+                // player.is_grounded = to_ground;
+                // player.can_jump = to_ground;
                 velocity.y = 0.;
                 // player.is_grounded = false;
                 physical_translation.y -= displacement;
@@ -1532,7 +1725,7 @@ fn check_for_collisions(
                     aabb.max.x - collider_aabb.min.x
                 };
                 let center2 = Vec2::new(center.x - displacement, center.y);
-                aabb2 = Aabb2d::new(center2, Vec2::splat(16.));
+                aabb2 = Aabb2d::new(center2, Vec2::new(12., 16.));
 
                 // check if displacement collides with other colliders
                 'inner: for collider2 in collider_query.iter() {
@@ -1553,14 +1746,14 @@ fn check_for_collisions(
                         let displacement2 = if previous_physical_translation.y > collider_center2.y
                         {
                             // player.is_grounded = true;
-                            to_ground = true;
+                            // to_ground = true;
                             aabb2.min.y - collider_aabb2.max.y
                         } else {
                             aabb2.max.y - collider_aabb2.min.y
                         };
                         physical_translation.y -= displacement2;
-                        player.is_grounded = to_ground;
-                        player.can_jump = to_ground;
+                        // player.is_grounded = to_ground;
+                        // player.can_jump = to_ground;
                         velocity.y = 0.;
                         break;
                     }
@@ -1573,13 +1766,14 @@ fn check_for_collisions(
             //     collider_aabb.half_size() * 2.,
             //     SPRING_GREEN,
             // );
+            // skip the rest of collision checking once one collision is found
             break;
         }
     }
 }
 
 fn check_for_exit(
-    mut gizmos: Gizmos,
+    // mut gizmos: Gizmos,
     player_query: Single<&PhysicalTranslation, With<Player>>,
     exit_query: Query<&Transform, With<Exit>>,
     mut ev_nextlevel: EventWriter<NextLevelEvent>,
@@ -1587,13 +1781,13 @@ fn check_for_exit(
     let physical_translation = player_query.into_inner();
 
     let center = physical_translation.truncate();
-    let aabb = Aabb2d::new(center, Vec2::splat(16.));
+    let aabb = Aabb2d::new(center, Vec2::new(12., 16.));
     // gizmos.rect_2d(center, aabb.half_size() * 2., YELLOW);
 
     // player.is_grounded = false;
     for exit in exit_query.iter() {
         let exit_center = exit.translation.truncate();
-        let exit_aabb = Aabb2d::new(exit_center, Vec2::splat(16.));
+        let exit_aabb = Aabb2d::new(exit_center, Vec2::splat(12.));
 
         let x_overlaps = aabb.min.x < exit_aabb.max.x && aabb.max.x > exit_aabb.min.x;
         let y_overlaps = aabb.min.y < exit_aabb.max.y && aabb.max.y > exit_aabb.min.y;
