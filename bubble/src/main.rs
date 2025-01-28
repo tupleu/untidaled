@@ -486,7 +486,7 @@ fn scale_screen(query: Single<&mut OrthographicProjection, With<Camera>>) {
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2d);
-    let image = asset_server.load("oceanbg.png");
+    let image = asset_server.load("oceanBG.png");
     commands.spawn((
         Sprite::from_image(image),
         Transform::from_scale(Vec3::splat(2.5)),
