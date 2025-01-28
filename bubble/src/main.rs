@@ -359,6 +359,10 @@ fn main() {
     App::new()
         .add_plugins(
             DefaultPlugins
+                .set(AssetPlugin {
+                    meta_check: bevy::asset::AssetMetaCheck::Never,
+                    ..default()
+                })
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
