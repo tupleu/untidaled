@@ -436,7 +436,6 @@ struct Player {
     is_moving: bool,
     is_bubbling: bool,
     bubbled: bool,
-    jumped: bool,
     can_jump: bool,
     h_speed: f32,
     jump_force: f32,
@@ -635,7 +634,6 @@ fn spawn_level(
                             is_moving: false,
                             is_bubbling: false,
                             bubbled: false,
-                            jumped: false,
                             can_jump: false,
                             jump_force: 210., //jump force? peak peak
                             h_speed: 100.,
@@ -1464,7 +1462,7 @@ fn coyote_time(_time: Res<Time>, player_query: Single<&mut Player>) {
 }
 
 fn handle_input(
-    mut gizmos: Gizmos,
+    // mut gizmos: Gizmos,
     mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     asset_server: Res<AssetServer>,
@@ -1504,11 +1502,8 @@ fn handle_input(
 
     if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
         velocity.y = player.jump_force;
-        player.jumped = true;
         // player.is_grounded = false;
         // player.can_jump = false;
-    } else {
-        player.jumped = false;
     }
     if keyboard_input.just_pressed(KeyCode::ShiftLeft)
         | keyboard_input.just_pressed(KeyCode::ShiftRight)
@@ -1662,10 +1657,16 @@ fn advance_physics(
 }
 
 fn ground_check(
-    player_query: Single<(&PhysicalTranslation, &mut Player)>,
+    player_query: Single<(
+        &PhysicalTranslation,
+        &mut PreviousPhysicalTranslation,
+        &mut Player,
+    )>,
+
     collider_query: Query<&Transform, (With<Collider>, Without<Player>)>,
 ) {
-    let (physical_translation, mut player) = player_query.into_inner();
+    let (physical_translation, mut prev_physical_translation, mut player) =
+        player_query.into_inner();
     player.is_grounded = false;
     for collider in collider_query.iter() {
         let center = physical_translation.truncate();
@@ -1686,7 +1687,7 @@ fn ground_check(
             player.can_jump = true;
         }
     }
-    if player.jumped {
+    if prev_physical_translation.y < physical_translation.y {
         player.can_jump = false;
     }
 }
