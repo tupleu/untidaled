@@ -441,6 +441,7 @@ struct Player {
     is_bubbling: bool,
     bubbled: bool,
     can_jump: bool,
+    has_jumped: bool,
     h_speed: f32,
     jump_force: f32,
     gravity: f32,
@@ -646,6 +647,7 @@ fn spawn_level(
                             is_bubbling: false,
                             bubbled: false,
                             can_jump: false,
+                            has_jumped: false,
                             jump_force: 210., //jump force? peak peak
                             h_speed: 165.,
                             gravity: 600.,
@@ -1483,10 +1485,12 @@ fn handle_input(
         input.x += 1.0;
     }
 
-    if player.can_jump && keyboard_input.pressed(KeyCode::Space) {
-        velocity.y = player.jump_force;
-        // player.is_grounded = false;
-        // player.can_jump = false;
+    if keyboard_input.pressed(KeyCode::Space) {
+        if player.can_jump && player.has_jumped == false {
+            velocity.y = player.jump_force;
+        }
+    } else {
+        player.has_jumped = false
     }
     if keyboard_input.just_pressed(KeyCode::ShiftLeft)
         | keyboard_input.just_pressed(KeyCode::ShiftRight)
@@ -1530,8 +1534,6 @@ fn handle_input(
 
             let x_overlaps = aabb.min.x < collider_aabb.max.x && aabb.max.x > collider_aabb.min.x;
             let y_overlaps = aabb.min.y < collider_aabb.max.y && aabb.max.y > collider_aabb.min.y;
-
-            println!("{:?} {:?}", aabb, collider_aabb);
 
             // if intersects, move back by larger axis
             if x_overlaps && y_overlaps {
@@ -1669,8 +1671,10 @@ fn ground_check(
             player.can_jump = true;
         }
     }
-    if prev_physical_translation.y < physical_translation.y {
+    // TODO: fix this check for when other objects can lift player
+    if prev_physical_translation.y < physical_translation.y && player.can_jump {
         player.can_jump = false;
+        player.has_jumped = true;
     }
 }
 
