@@ -637,10 +637,7 @@ fn spawn_level(
                         )),
                         PreviousPhysicalTranslation::default(),
                         Player {
-                            coyote_timer: Timer::new(
-                                Duration::from_secs_f32(0.2),
-                                TimerMode::Repeating,
-                            ),
+                            coyote_timer: Timer::new(Duration::from_secs_f32(0.2), TimerMode::Once),
                             is_grounded: false,
                             is_left: false,
                             is_moving: false,
@@ -1669,6 +1666,7 @@ fn ground_check(
         {
             player.is_grounded = true;
             player.can_jump = true;
+            player.coyote_timer.reset();
         }
     }
     // TODO: fix this check for when other objects can lift player
@@ -1749,10 +1747,7 @@ fn check_for_collisions(
                         break;
                     }
                 }
-                // player.is_grounded = to_ground;
-                // player.can_jump = to_ground;
                 velocity.y = 0.;
-                // player.is_grounded = false;
                 physical_translation.y -= displacement;
             } else {
                 displacement = if previous_physical_translation.x > collider_center.x {
@@ -1788,8 +1783,6 @@ fn check_for_collisions(
                             aabb2.max.y - collider_aabb2.min.y
                         };
                         physical_translation.y -= displacement2;
-                        // player.is_grounded = to_ground;
-                        // player.can_jump = to_ground;
                         velocity.y = 0.;
                         break;
                     }
